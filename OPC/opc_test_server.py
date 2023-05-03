@@ -49,10 +49,15 @@ if __name__ == "__main__":
     # add variable to device type
     device_type.add_variable(
         idx, "Temperatur Käse", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+    device_type.add_variable(
+        idx, "Temperatur Brot", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
 
     # create an instance of our device type in the address space
     device = server.nodes.objects.add_object(
         idx, "Temperaturen", objecttype=device_type)
+
+    # node für den client writable machen
+    device.get_child(["{}:Temperatur Brot".format(idx)]).set_writable(writable=True)
 
     # start variable updater thread
     var_updater = VarUpdater(device.get_child(["{}:Temperatur Käse".format(idx)]))
