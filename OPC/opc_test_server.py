@@ -28,14 +28,11 @@ class VarUpdater(Thread):
 
 
 if __name__ == "__main__":
-    # optional: setup logging
-    logging.basicConfig(level=logging.WARN)
-
     # create server object
     server = Server()
 
     # set server name
-    server.set_server_name("Thomas OPC-UA Server")
+    server.set_server_name("Mein OPC Testserver")
 
     # set endpoint
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
