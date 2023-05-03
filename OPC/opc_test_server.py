@@ -24,7 +24,8 @@ class VarUpdater(Thread):
         while not self._stopev:
             v = sin(time.time() / 10)
             self.var.set_value(v)
-            time.sleep(0.1)
+            print(self.var.get_value())
+            time.sleep(5)
 
 
 if __name__ == "__main__":
@@ -38,23 +39,23 @@ if __name__ == "__main__":
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
 
     # setup our own namespace
-    uri = "http://example.com/ThomasOPCUAServer"
+    uri = "Mein_OPCUA_Testserver"
     idx = server.register_namespace(uri)
 
     # create a new node type we can instantiate in our address space
     device_type = server.nodes.base_object_type.add_object_type(
-        idx, "MyDeviceType")
+        idx, "Sensorwerte")
 
     # add variable to device type
     device_type.add_variable(
-        idx, "thomas", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+        idx, "Temperatur Käse", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
 
     # create an instance of our device type in the address space
     device = server.nodes.objects.add_object(
-        idx, "Device0001", objecttype=device_type)
+        idx, "Temperaturen", objecttype=device_type)
 
     # start variable updater thread
-    var_updater = VarUpdater(device.get_child(["{}:thomas".format(idx)]))
+    var_updater = VarUpdater(device.get_child(["{}:Temperatur Käse".format(idx)]))
     var_updater.start()
 
     # start server

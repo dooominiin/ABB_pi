@@ -3,6 +3,9 @@ import time
 
 from opcua import Client
 
+# Anzupassen:
+# Serveradresse für client
+# 
 if __name__ == "__main__":
     client = Client("opc.tcp://localhost:4840/freeopcua/server/")
     try:
