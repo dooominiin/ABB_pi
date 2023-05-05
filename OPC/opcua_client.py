@@ -28,7 +28,6 @@ class OpcUaClient:
         self.terminate = False
         self.thread = Thread(target=self.loop_forever)
         self.output = 0
-        self.input = 0
         self.dt = dt # diskretisierungszeitschritt
 
     def set_regler_client_reference(self,regler):
@@ -57,8 +56,6 @@ class OpcUaClient:
     def loop_forever(self):
         while not self.terminate:                       
             start_time = time.time()  # Startzeit speichern
-            self.input += 1
-            
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
   

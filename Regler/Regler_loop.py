@@ -24,7 +24,9 @@ class Regler:
     def loop_forever(self):
         while not self.terminate:
             start_time = time.time()  # Startzeit speichern
+            ######################## Regler ########################
             self.output = self.Smithpredictor.update(self.input)
+            ##################### Regler fertig ####################
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
     
@@ -32,10 +34,4 @@ class Regler:
         self.terminate = True
         self.thread.join()
 
-    def update(self):
-        input_value = self.delay.update(10,self.input,self.dt)
-        self.output = input_value
-        print("Updating Regler with input: ", self.output)
-        self.client.set_output(self.output)
-        return self.output
-        
+    
