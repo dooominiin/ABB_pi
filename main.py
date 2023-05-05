@@ -3,6 +3,7 @@ import time
 import signal
 from Regler.Reglermodell import Smithpredictor  # Importiere die Regler-Klasse aus Reglermodell
 
+
 # Hier werden die Threads für den OPC client sowie den Regler gestartet. 
 # Timestep variables
 Ts_OPC = 0.01
