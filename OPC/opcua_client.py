@@ -23,14 +23,13 @@ class SubHandler(object):
 
 
 class OpcUaClient:
-    def __init__(self, dt):
+    def __init__(self, dt, regler):
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
         self.terminate = False
         self.thread = Thread(target=self.loop_forever)
         self.output = 0
         self.dt = dt # diskretisierungszeitschritt
-
-    def set_regler_client_reference(self,regler):
+        
         self.regler = regler
         self.regler.set_opc_client(self)
         try:
@@ -45,7 +44,8 @@ class OpcUaClient:
             self.subscription = self.client.create_subscription(500, self.handler)
             self.handle = self.subscription.subscribe_data_change(self.myvar)
         except:
-            pass
+            print("Verbindung zum OPC Server nicht möglich!")
+
     
     def set_output(self,output):
         self.output = output
