@@ -4,16 +4,18 @@ Created on Fri Feb 10 16:34:38 2023
 
 @author: domin
 """
+# link zur diskretisierung : https://ch.mathworks.com/support/search.html/answers/578164-why-do-i-get-different-outputs-with-bilinear-and-c2d-sysc-ts-tustin-matlab-functions.html?fq%5B%5D=asset_type_name:answer&fq%5B%5D=category:signal/pulse-and-transition-metrics&page=1
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import control as ct
+from scipy.signal import cont2discrete, lti, dlti, dstep
 
 warnings.filterwarnings("error", category=RuntimeWarning)
 
 
-def rohrstueck():
-    
+def rohrstueck(dt):
+
     def f_rohr(t, x, u, params):
         p_oel = params.get('p_oel',880)
         c_oel = params.get('c_oel',1855)
@@ -47,15 +49,15 @@ def rohrstueck():
     def f_rohr_output(t,x,u,params):
         return [x[0],u[1]]
     
-    return ct.NonlinearIOSystem(f_rohr, f_rohr_output, inputs=('T_in','F'), outputs=('T_out','F'),states=('T_oel','T_st'),dt=0.1)
+    return ct.NonlinearIOSystem(f_rohr, f_rohr_output, inputs=('T_in','F'), outputs=('T_out','F'),states=('T_oel','T_st'),dt=dt)
 
 
 
-def transportdelay(dt,n_Bins):   
+def transportdelay(dt,n_Bins,volumen):   
     
     def f(t, x, u, params):
         dt = params.get('dt',0.1)
-        volumen = params.get('volumen',0.01)
+        volumen = params.get('volumen',volumen)
         number_Bins = params.get('n_Bins',1000)+1
         bins = x.copy()
         laenge_Bin = volumen/number_Bins
@@ -195,3 +197,115 @@ class Transportdelay:
 #    plt.show()
 
 #plt.show()
+
+
+class rohrstück_diskrete:
+    # Beschreibung
+    def __init__(self,dt, startwert, volumen, volumen_stahl, länge, durchmesser):
+        F=0.001 # wird nach der diskretisierung aktualisiert auf den aktuellen wert
+        #volumen= 0.0015;
+        #volumen_stahl = 0.00042;
+        #länge= 1.230+0.12+0.11;
+        #durchmesser = 0.036;
+        
+        c_oel= 1855
+        p_oel= 880
+        c_st = 490
+        p_st = 7800
+        alpha = 3370*(1 + 0.0014*60)*0.001/(durchmesser/2)**2/np.pi
+        lambda__1 = alpha * länge* durchmesser * np.pi
+
+        a__1 = lambda__1/(volumen*p_oel*c_oel)
+        a__2 = lambda__1/(volumen_stahl*p_st*c_st)
+        Tau__1 = volumen*p_oel*c_oel/(F*p_oel*c_oel)
+
+        self.A=np.array([[-a__1-1/Tau__1 , a__1],[a__2 , -a__2]])
+        self.FM = np.array([[-1/Tau__1,0],[0,0]])
+        self.B=np.array([[1/Tau__1],[0]])
+        self.C=np.array([1, 0])
+        self.D=np.array([0])
+        self.dt = dt
+        self.startwert = startwert
+        self.diskretisierung()
+
+    def diskretisierung(self):
+        [self.A_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.A, self.B, self.C, self.D), dt=self.dt, method='bilinear')
+        #[self.FM_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.FM, self.B, self.C, self.D), dt=self.dt, method='bilinear')
+        self.A_tilde = self.A_d
+        #self.FM_tilde = self.FM_d
+        self.B_tilde = self.B_d
+        self.x = np.ones(np.ndim(self.A))*self.startwert
+        self.x_neu = np.ones(np.ndim(self.A))*self.startwert
+        self.u = 0
+        self.y = 0
+
+    def update(self, input, F):
+        u = [input]
+        # Berücksichtige aktuelles F 
+        #self.FM_d[0] = self.FM_tilde[0] * F * self.dt
+        #self.B_d[0] = self.B_tilde[0] * F * self.dt
+        #self.A_d = self.FM_d + self.A_tilde
+
+        # Berechne neuen Zustand
+        self.x_neu = self.A_d @ self.x + self.B_d @ u
+        
+        # Berechne Ausgang
+        self.y = self.C_d @ self.x + self.D_d @ u
+        
+        # Speichere den neuen Zustand
+        self.x = self.x_neu
+        
+        return self.y
+
+class testklasse:
+    # Beschreibung
+    def __init__(self,dt, startwert):
+        
+        self.A=np.array([[-2 , 1],[1 , -1]])
+        self.B=np.array([[1],[0]])
+        self.C=np.array([1, 0])
+        self.D=np.array([0])
+        self.dt = dt
+        self.startwert = startwert
+        self.diskretisierung()
+
+    def diskretisierung(self):
+        [self.A_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.A, self.B, self.C, self.D), dt=self.dt, method='zoh')
+        #[self.FM_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.FM, self.B, self.C, self.D), dt=self.dt, method='bilinear')
+        print(self.A_d)
+        print(self.B_d)
+        print(self.C_d)
+        print(self.D_d)
+        
+        self.A_tilde = self.A_d
+        #self.FM_tilde = self.FM_d
+        self.B_tilde = self.B_d
+        self.x = np.ones(np.ndim(self.A))*self.startwert
+        self.x_neu = np.ones(np.ndim(self.A))*self.startwert
+        self.u = 0
+        self.y = 0
+
+    def update(self, input, F):
+        u = [input]
+        # Berücksichtige aktuelles F 
+        #self.FM_d[0] = self.FM_tilde[0] * F * self.dt
+        #self.B_d[0] = self.B_tilde[0] * F * self.dt
+        #self.A_d = self.FM_d + self.A_tilde
+
+        # Berechne neuen Zustand
+        self.x_neu = self.A_d @ self.x + self.B_d @ u
+        
+        # Berechne Ausgang
+        self.y = self.C_d @ self.x + self.D_d @ u
+        
+        # Speichere den neuen Zustand
+        self.x = self.x_neu
+        
+        return self.y
+
+
+if __name__ == "__main__":
+    r = rohrstück_diskrete(dt = 1, startwert = 100,)
+    for i in range(20):
+        print(r.update(80,1))
+    
