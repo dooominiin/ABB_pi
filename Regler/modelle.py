@@ -124,8 +124,8 @@ def transportdelay(dt,n_Bins,volumen):
 class Transportdelay:
     # Die Klasse Transportdelay(n_Bins, volumen, startwert) erzeug
     # ein Objekt, dass ein Transportdelay wie in einem mit Flüssigkeit 
-    # durchflossenen Rohr simuliert. Das Volumen soll in m^3 angegeben werden, 
-    # der Volumenstrom(F) in m^3/s. Nach der Initialisierung 
+    # durchflossenen Rohr simuliert. Das Volumen soll in m**3 angegeben werden, 
+    # der Volumenstrom(F) in m**3/s. Nach der Initialisierung 
     # kann mit update(F,Eingangstemperatur,dt) ein neuer Output 
     # berechnet und ausgegeben werden. n_Bins ist die Anzahl der internen Zustände, 
     # Werte zwischen 100 und 1000 liefern genug genauigkeit.  
@@ -260,52 +260,53 @@ class rohrstück_diskrete:
 class testklasse:
     # Beschreibung
     def __init__(self,dt, startwert):
-        
-        self.A=np.array([[-2 , 1],[1 , -1]])
-        self.B=np.array([[1],[0]])
         self.C=np.array([1, 0])
         self.D=np.array([0])
         self.dt = dt
         self.startwert = startwert
-        self.diskretisierung()
+        self.x = np.array([[startwert], [startwert]])
+        self.F_neu = 0
+        self.u_alt = np.array([0])
 
-    def diskretisierung(self):
-        [self.A_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.A, self.B, self.C, self.D), dt=self.dt, method='zoh')
-        #[self.FM_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.FM, self.B, self.C, self.D), dt=self.dt, method='bilinear')
-        print(self.A_d)
-        print(self.B_d)
-        print(self.C_d)
-        print(self.D_d)
-        
-        self.A_tilde = self.A_d
-        #self.FM_tilde = self.FM_d
-        self.B_tilde = self.B_d
-        self.x = np.ones(np.ndim(self.A))*self.startwert
-        self.x_neu = np.ones(np.ndim(self.A))*self.startwert
-        self.u = 0
-        self.y = 0
 
-    def update(self, input, F):
-        u = [input]
-        # Berücksichtige aktuelles F 
-        #self.FM_d[0] = self.FM_tilde[0] * F * self.dt
-        #self.B_d[0] = self.B_tilde[0] * F * self.dt
-        #self.A_d = self.FM_d + self.A_tilde
+    def update(self, input, F_neu):
+        uk1 = input
+        uk = self.u_alt
+        Fk = self.F_neu
+        self.F_neu = F_neu
+        Ts = self.dt
+        xk1 = self.x[0]
+        xk2 = self.x[1]
 
-        # Berechne neuen Zustand
-        self.x_neu = self.A_d @ self.x + self.B_d @ u
-        
+        # Berechne zustand
+        self.x_neu = np.array([(6*(3325211903386097*Ts + 18014398509481984)*((4359849020494567*Ts*xk2)/36028797018963968 - xk1*((Ts*((2000*Fk)/3 + 4359849020494567/18014398509481984))/2 - 1) + (1000*Fk*Ts*uk)/3 + (1000*F_neu*Ts*uk1)/3))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904) - (13079547061483701*Ts*(xk2*((3325211903386097*Ts)/18014398509481984 - 1) - (3325211903386097*Ts*xk1)/18014398509481984))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904), (19951271420316582*Ts*((4359849020494567*Ts*xk2)/36028797018963968 - xk1*((Ts*((2000*Fk)/3 + 4359849020494567/18014398509481984))/2 - 1) + (1000*Fk*Ts*uk)/3 + (1000*F_neu*Ts*uk1)/3))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904) - ((xk2*((3325211903386097*Ts)/18014398509481984 - 1) - (3325211903386097*Ts*xk1)/18014398509481984)*(13079547061483701*Ts + 36028797018963968000*F_neu*Ts + 108086391056891904))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904)])
+        #print("x: ",self.x.shape)
+        #print("x_neu: ",self.x_neu.shape)
+        #print("u_alt :",self.u_alt.shape,"\n")
         # Berechne Ausgang
-        self.y = self.C_d @ self.x + self.D_d @ u
+        self.y = self.C @ self.x + self.D @ self.u_alt
         
         # Speichere den neuen Zustand
         self.x = self.x_neu
-        
+        #print("x: ",self.x.shape)
+
+        self.u_alt = uk1
+
         return self.y
 
 
 if __name__ == "__main__":
-    r = rohrstück_diskrete(dt = 1, startwert = 100,)
-    for i in range(20):
-        print(r.update(80,1))
+ 
     
+    rr = []  # Initialisierung der Liste rr
+
+    for n in range(10):
+        rr.append(testklasse(dt=0.1, startwert=100))  # Objekte zur Liste rr hinzufügen
+    
+
+    for i in range(100):
+        input = np.array([80])
+        for r in rr:
+            print("input :",input)
+            input = r.update(input=input,F_neu=0.001)
+        print("\n")
