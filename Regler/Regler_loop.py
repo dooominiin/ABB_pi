@@ -1,12 +1,20 @@
 import time
 from threading import Thread
 from Regler.Smithpredictor import Smithpredictor
+import numpy as np
 
 class Regler:
     def __init__(self,dt):
         self.terminate = False
         self.thread = Thread(target=self.loop_forever)
-        self.input = 0  
+        self.input = {
+            "T_D40": 60,
+            "T_tank": 60,
+            "T_t": 60,
+            "F": 0.001,
+            "s": 0,
+            "r": 0.5
+        }
         self.output = 0
         self.dt = dt # diskretisierungszeitschritt
         self.client = None
@@ -15,9 +23,27 @@ class Regler:
     def set_opc_client(self, client):
         self.client = client
     
-    def set_input(self,input):
-        self.input = input
+    def set_input(self, input, node):
+        if node == self.client.client.get_node("ns=2;i=9"):
+            self.input["T_D40"] = input
+            #print(f"Variable T_D40 aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=10"):
+            self.input["T_tank"] = input
+            #print(f"Variable T_tank aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=11"):
+            self.input["T_t"] = input
+            #print(f"Variable T_t aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=12"):
+            self.input["F"] = input
+            #print(f"Variable F aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=13"):
+            self.input["s"] = input
+            #print(f"Variable s aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=14"):
+            self.input["r"] = input
+            #print(f"Variable r aktualisiert mit dem Wert: {input}")
 
+       
     def loop_start(self):
         self.thread.start()
 

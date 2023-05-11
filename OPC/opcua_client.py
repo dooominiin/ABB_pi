@@ -15,7 +15,8 @@ class SubHandler(object):
 
     def datachange_notification(self, node, val, data):
         print("Python: New data change event", node, val)
-        self.regler.set_input(val) # neue daten zum regler schicken
+    
+        self.regler.set_input(val,node) # neue daten zum regler schicken
 
     def event_notification(self, event):
         print("Python: New event", event)
@@ -30,19 +31,25 @@ class OpcUaClient:
         self.output = 0
         self.dt = dt # diskretisierungszeitschritt
         
+        
         self.regler = regler
         self.regler.set_opc_client(self)
         try:
             self.client.connect()
             root = self.client.get_root_node()
-            # meine variabeln
-            self.myvar = root.get_child(["0:Objects", "2:Temperaturen", "2:Temperatur Käse"])
-            self.myvar2 = root.get_child(["0:Objects", "2:Temperaturen", "2:Temperatur Brot"])
+            
             # subscribing to a variable node
             self.handler = SubHandler()
             self.handler.get_regler(self.regler)
-            self.subscription = self.client.create_subscription(500, self.handler)
-            self.handle = self.subscription.subscribe_data_change(self.myvar)
+            self.subscription = self.client.create_subscription(500, self.handler) 
+            
+            # meine variabeln
+            variable_names = ["T_D40", "T_tank", "T_t", "F", "s", "r"]
+            for var_name in variable_names:
+                myvar = root.get_child(["0:Objects", "2:Temperaturen",f"2:{var_name}"])
+                self.handle = self.subscription.subscribe_data_change(myvar)
+
+           
         except:
             print("Verbindung zum OPC Server nicht möglich!")
 
@@ -62,5 +69,7 @@ class OpcUaClient:
     def loop_stop(self):
         self.terminate = True
         self.thread.join()
-        self.subscription.delete()
+        if hasattr(self.client, 'subscription'):
+            self.client.subscription.delete()
         self.client.disconnect()
+        

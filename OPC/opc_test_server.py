@@ -12,19 +12,20 @@ from opcua import ua, uamethod, Server
 
 
 class VarUpdater(Thread):
-    def __init__(self, var):
+    def __init__(self, vars):
         Thread.__init__(self)
         self._stopev = False
-        self.var = var
+        self.vars = vars
 
     def stop(self):
         self._stopev = True
 
     def run(self):
         while not self._stopev:
-            v = sin(time.time() / 10)
-            self.var.set_value(v)
-            print(self.var.get_value())
+            for var in self.vars:
+                v = 100*sin(time.time() / 100)
+                var.set_value(v)
+                print("Variabel aktualisiert mit: ",var)
             time.sleep(5)
 
 
@@ -48,19 +49,36 @@ if __name__ == "__main__":
 
     # add variable to device type
     device_type.add_variable(
-        idx, "Temperatur Käse", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+        idx, "T_D40", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
     device_type.add_variable(
-        idx, "Temperatur Brot", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+        idx, "T_tank", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+    device_type.add_variable(
+        idx, "T_t", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+    device_type.add_variable(
+        idx, "F", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+    device_type.add_variable(
+        idx, "s", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+    device_type.add_variable(
+        idx, "r", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+
 
     # create an instance of our device type in the address space
     device = server.nodes.objects.add_object(
         idx, "Temperaturen", objecttype=device_type)
 
     # node für den client writable machen
-    device.get_child(["{}:Temperatur Brot".format(idx)]).set_writable(writable=True)
+    device.get_child(["{}:r".format(idx)]).set_writable(writable=True)
 
     # start variable updater thread
-    var_updater = VarUpdater(device.get_child(["{}:Temperatur Käse".format(idx)]))
+    vars = [
+        device.get_child(["{}:T_D40".format(idx)]),
+        device.get_child(["{}:T_tank".format(idx)]),
+        device.get_child(["{}:T_t".format(idx)]),
+        device.get_child(["{}:F".format(idx)]),
+        device.get_child(["{}:s".format(idx)]),
+        device.get_child(["{}:r".format(idx)])
+    ]
+    var_updater = VarUpdater(vars)
     var_updater.start()
 
     # start server
@@ -70,7 +88,7 @@ if __name__ == "__main__":
     try:
         print("Press Ctrl-C to stop.")
         while True:
-            time.sleep(1)
+            time.sleep(0.1)
 
     except KeyboardInterrupt:
         pass

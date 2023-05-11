@@ -4,129 +4,16 @@ Created on Fri Feb 10 16:34:38 2023
 
 @author: domin
 """
-# link zur diskretisierung : https://ch.mathworks.com/support/search.html/answers/578164-why-do-i-get-different-outputs-with-bilinear-and-c2d-sysc-ts-tustin-matlab-functions.html?fq%5B%5D=asset_type_name:answer&fq%5B%5D=category:signal/pulse-and-transition-metrics&page=1
+# link zur diskretisierung mit tustin: https://ch.mathworks.com/support/search.html/answers/578164-why-do-i-get-different-outputs-with-bilinear-and-c2d-sysc-ts-tustin-matlab-functions.html?fq%5B%5D=asset_type_name:answer&fq%5B%5D=category:signal/pulse-and-transition-metrics&page=1
 import numpy as np
-import matplotlib.pyplot as plt
-import warnings
-import control as ct
-from scipy.signal import cont2discrete, lti, dlti, dstep
-
-warnings.filterwarnings("error", category=RuntimeWarning)
-
-
-def rohrstueck(dt):
-
-    def f_rohr(t, x, u, params):
-        p_oel = params.get('p_oel',880)
-        c_oel = params.get('c_oel',1855)
-        p_st = params.get('p_st',7800)
-        c_st = params.get('c_st',490)
-        d = params.get('d__1',0.036)
-        L = params.get('L__1',1.46)
-        V_st = params.get('V_st__1',0.00042)
-        V = params.get('V__1',0.0015)
-        dt = params.get('dt',0.1)
-        
-        T_oel = x[0]
-        T_st = x[1]
-        
-        T0 = u[0]
-        F = u[1]
-            
-        alpha =  3370*(1 + 0.0014*60)*0.001/(d/2)/(d/2)/np.pi
-        lambda__1 = alpha * L * d * np.pi
-        
-        a1 = lambda__1/(V*p_st*c_st);
-        a2 = lambda__1/(V_st*p_st*c_st);
-        Tau =  V *p_oel*c_oel/(F*p_oel*c_oel);
-        
-        dT_oel = -(1/Tau+a1)*T_oel + a1*T_st + 1/Tau*T0
-        dT_st = a2*T_oel -a2*T_st
-        
-        
-        return x+[dT_oel,dT_st]*dt
-    
-    def f_rohr_output(t,x,u,params):
-        return [x[0],u[1]]
-    
-    return ct.NonlinearIOSystem(f_rohr, f_rohr_output, inputs=('T_in','F'), outputs=('T_out','F'),states=('T_oel','T_st'),dt=dt)
-
-
-
-def transportdelay(dt,n_Bins,volumen):   
-    
-    def f(t, x, u, params):
-        dt = params.get('dt',0.1)
-        volumen = params.get('volumen',volumen)
-        number_Bins = params.get('n_Bins',1000)+1
-        bins = x.copy()
-        laenge_Bin = volumen/number_Bins
-        output = x[len(x)-1]
-    
-        eingangstemperatur = u[0]
-        F = u[1]
-        
-        if F<0:
-            F=0
-                
-        k = number_Bins-2
-        laenge_0 = F*dt
-        f,m = np.divmod(laenge_0, laenge_Bin)
-        f = int(f)
-        m = m/laenge_Bin
-        f = f
-        m = m
-        
-        
-        if f<=k:
-            try:
-                output = (np.sum(bins[range(k-f+1,k+1)])+bins[k-f]*(m))/(f+m)
-            except RuntimeWarning:                
-                output= bins[k]
-        
-        if f>k:
-            output = (np.sum(bins)+(f-k)*eingangstemperatur)/f
-            f=k+1
-        
-        if f<k-1:
-            index_for_interpolation_T = range(k,f,-1)
-            for i in index_for_interpolation_T:
-                bins[i] = m * bins[i-1-f] + (1-m) * bins[i-f]
-        
-        if f<k:  
-            bins[f] = m*eingangstemperatur + (1-m) * bins[0]
-        
-        if f>0:
-            index_for_neue_T = range(0,f)
-            for i in index_for_neue_T:
-                bins[i] = eingangstemperatur
-        
-        dT = np.empty(np.shape(x))
-        
-        bins[len(x)-1] = output
-
-        for i in range(0,len(x)):
-            dT[i] = (bins[i]-x[i])/dt    
-
-        return bins
-        
-      
-    
-    def f_out(t,x,u,params):
-        #print(x)
-        
-        return [x[len(x)-1],u[1]]
-        
-    return ct.NonlinearIOSystem(f, f_out, inputs=('T_in','F'), outputs=('T_out','F'), states = n_Bins+1,dt=dt)
-
-
+import time
 
 class Transportdelay:
     # Die Klasse Transportdelay(n_Bins, volumen, startwert) erzeug
     # ein Objekt, dass ein Transportdelay wie in einem mit Flüssigkeit 
     # durchflossenen Rohr simuliert. Das Volumen soll in m**3 angegeben werden, 
     # der Volumenstrom(F) in m**3/s. Nach der Initialisierung 
-    # kann mit update(F,Eingangstemperatur,dt) ein neuer Output 
+    # kann mit update(F,input,dt) ein neuer Output 
     # berechnet und ausgegeben werden. n_Bins ist die Anzahl der internen Zustände, 
     # Werte zwischen 100 und 1000 liefern genug genauigkeit.  
 
@@ -137,7 +24,10 @@ class Transportdelay:
         self.laenge_Bin = self.volumen/self.number_Bins
         self.output = startwert 
             
-    def update(self, F, eingangstemperatur, dt):
+    def update(self, F, input, dt):
+     
+
+        input = input
         if F < 0 :
             raise ValueError("F darf nicht kleiner 0 sein!")     
         if dt < 0 :
@@ -151,16 +41,12 @@ class Transportdelay:
         m = m/self.laenge_Bin
         self.f = f
         self.m = m
-        
-      
+
         if f<=k:
-            try:
-                self.output = (np.sum(self.bins[range(k-f+1,k+1)])+self.bins[k-f]*(m))/(f+m)
-            except RuntimeWarning:                
-                self.output= self.bins[k]
-        
+            self.output = self.weird_division(n=(np.sum(self.bins[range(k-f+1,k+1)])+self.bins[k-f]*(m)), d=(f+m))
+
         if f>k:
-            self.output = (np.sum(self.bins)+(f-k)*eingangstemperatur)/f
+            self.output = (np.sum(self.bins)+(f-k)*input)/f
             f=k+1
         
         if f<k-1:
@@ -170,95 +56,23 @@ class Transportdelay:
                 self.bins[i] = m * self.bins[i-1-f] + (1-m) * self.bins[i-f]
         
         if f<k:   
-            self.bins[f] = m*eingangstemperatur + (1-m) * self.bins[0]
+            self.bins[f] = m*input + (1-m) * self.bins[0]
         
         if f>0:
             index_for_neue_T = range(0,f)
             for i in index_for_neue_T:
-                self.bins[i] = eingangstemperatur
-        #print(self.output)
-        return self.output
+                self.bins[i] = input
+        return np.ravel(np.array([self.output]))
     
     
-    
+    def weird_division(self, n, d):
+        return n / d if d else self.bins[self.k]    
     
     def printme(self):
         return self.bins
-        #print(self.output)
         
-
-
-#x = Transportdelay(n_Bins=1000,volumen=10,startwert=100)
-
-#t = np.linspace(0,100,101)
-
-#for tt in t:
-#    plt.plot(x.update(F = 1, eingangstemperatur = 100+10*np.cos(0.1*tt), dt = 0.5+0.5*np.sin(tt)))
-#    plt.show()
-
-#plt.show()
-
-
-class rohrstück_diskrete:
-    # Beschreibung
-    def __init__(self,dt, startwert, volumen, volumen_stahl, länge, durchmesser):
-        F=0.001 # wird nach der diskretisierung aktualisiert auf den aktuellen wert
-        #volumen= 0.0015;
-        #volumen_stahl = 0.00042;
-        #länge= 1.230+0.12+0.11;
-        #durchmesser = 0.036;
-        
-        c_oel= 1855
-        p_oel= 880
-        c_st = 490
-        p_st = 7800
-        alpha = 3370*(1 + 0.0014*60)*0.001/(durchmesser/2)**2/np.pi
-        lambda__1 = alpha * länge* durchmesser * np.pi
-
-        a__1 = lambda__1/(volumen*p_oel*c_oel)
-        a__2 = lambda__1/(volumen_stahl*p_st*c_st)
-        Tau__1 = volumen*p_oel*c_oel/(F*p_oel*c_oel)
-
-        self.A=np.array([[-a__1-1/Tau__1 , a__1],[a__2 , -a__2]])
-        self.FM = np.array([[-1/Tau__1,0],[0,0]])
-        self.B=np.array([[1/Tau__1],[0]])
-        self.C=np.array([1, 0])
-        self.D=np.array([0])
-        self.dt = dt
-        self.startwert = startwert
-        self.diskretisierung()
-
-    def diskretisierung(self):
-        [self.A_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.A, self.B, self.C, self.D), dt=self.dt, method='bilinear')
-        #[self.FM_d,self.B_d, self.C_d, self.D_d,dt]= cont2discrete(system = (self.FM, self.B, self.C, self.D), dt=self.dt, method='bilinear')
-        self.A_tilde = self.A_d
-        #self.FM_tilde = self.FM_d
-        self.B_tilde = self.B_d
-        self.x = np.ones(np.ndim(self.A))*self.startwert
-        self.x_neu = np.ones(np.ndim(self.A))*self.startwert
-        self.u = 0
-        self.y = 0
-
-    def update(self, input, F):
-        u = [input]
-        # Berücksichtige aktuelles F 
-        #self.FM_d[0] = self.FM_tilde[0] * F * self.dt
-        #self.B_d[0] = self.B_tilde[0] * F * self.dt
-        #self.A_d = self.FM_d + self.A_tilde
-
-        # Berechne neuen Zustand
-        self.x_neu = self.A_d @ self.x + self.B_d @ u
-        
-        # Berechne Ausgang
-        self.y = self.C_d @ self.x + self.D_d @ u
-        
-        # Speichere den neuen Zustand
-        self.x = self.x_neu
-        
-        return self.y
-
-class testklasse:
-    # Beschreibung
+class rohrstück_1:
+# Beschreibung
     def __init__(self,dt, startwert):
         self.C=np.array([1, 0])
         self.D=np.array([0])
@@ -268,8 +82,42 @@ class testklasse:
         self.F_neu = 0
         self.u_alt = np.array([0])
 
+    def update(self, F, input):
+        F_neu = F
+        uk1 = input
+        uk = self.u_alt
+        Fk = self.F_neu
+        self.F_neu = F_neu
+        Ts = self.dt
+        xk1 = self.x[0]
+        xk2 = self.x[1]
 
-    def update(self, input, F_neu):
+
+        # Berechne zustand
+        self.x_neu = np.array([(6*(3325211903386097*Ts + 18014398509481984)*((4359849020494567*Ts*xk2)/36028797018963968 - xk1*((Ts*((2000*Fk)/3 + 4359849020494567/18014398509481984))/2 - 1) + (1000*Fk*Ts*uk)/3 + (1000*F_neu*Ts*uk1)/3))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904) - (13079547061483701*Ts*(xk2*((3325211903386097*Ts)/18014398509481984 - 1) - (3325211903386097*Ts*xk1)/18014398509481984))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904), (19951271420316582*Ts*((4359849020494567*Ts*xk2)/36028797018963968 - xk1*((Ts*((2000*Fk)/3 + 4359849020494567/18014398509481984))/2 - 1) + (1000*Fk*Ts*uk)/3 + (1000*F_neu*Ts*uk1)/3))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904) - ((xk2*((3325211903386097*Ts)/18014398509481984 - 1) - (3325211903386097*Ts*xk1)/18014398509481984)*(13079547061483701*Ts + 36028797018963968000*F_neu*Ts + 108086391056891904))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904)])
+
+        # Berechne Ausgang
+        self.y = self.C @ self.x + self.D @ self.u_alt
+        
+        # Speichere den neuen Zustand
+        self.x = self.x_neu
+        self.u_alt = uk1
+
+        return self.y
+
+class rohrstück_2:
+# Beschreibung
+    def __init__(self,dt, startwert):
+        self.C=np.array([1, 0])
+        self.D=np.array([0])
+        self.dt = dt
+        self.startwert = startwert
+        self.x = np.array([[startwert], [startwert]])
+        self.F_neu = 0
+        self.u_alt = np.array([0])
+
+    def update(self, F,input):
+        F_neu = F
         uk1 = input
         uk = self.u_alt
         Fk = self.F_neu
@@ -279,34 +127,174 @@ class testklasse:
         xk2 = self.x[1]
 
         # Berechne zustand
-        self.x_neu = np.array([(6*(3325211903386097*Ts + 18014398509481984)*((4359849020494567*Ts*xk2)/36028797018963968 - xk1*((Ts*((2000*Fk)/3 + 4359849020494567/18014398509481984))/2 - 1) + (1000*Fk*Ts*uk)/3 + (1000*F_neu*Ts*uk1)/3))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904) - (13079547061483701*Ts*(xk2*((3325211903386097*Ts)/18014398509481984 - 1) - (3325211903386097*Ts*xk1)/18014398509481984))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904), (19951271420316582*Ts*((4359849020494567*Ts*xk2)/36028797018963968 - xk1*((Ts*((2000*Fk)/3 + 4359849020494567/18014398509481984))/2 - 1) + (1000*Fk*Ts*uk)/3 + (1000*F_neu*Ts*uk1)/3))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904) - ((xk2*((3325211903386097*Ts)/18014398509481984 - 1) - (3325211903386097*Ts*xk1)/18014398509481984)*(13079547061483701*Ts + 36028797018963968000*F_neu*Ts + 108086391056891904))/(33030818481800283*Ts + 6650423806772194000*F_neu*Ts**2 + 36028797018963968000*F_neu*Ts + 108086391056891904)])
-        #print("x: ",self.x.shape)
-        #print("x_neu: ",self.x_neu.shape)
-        #print("u_alt :",self.u_alt.shape,"\n")
+        self.x_neu = np.array([(137*(1605240352503639*Ts + 72057594037927936)*((548673005513257*Ts*xk2)/4503599627370496 - xk1*((Ts*((10000*Fk)/137 + 548673005513257/2251799813685248))/2 - 1) + (5000*Fk*Ts*uk)/137 + (5000*F_neu*Ts*uk1)/137))/(1422609156378057887*Ts + 8026201762518195000*F_neu*Ts**2 + 360287970189639680000*F_neu*Ts + 9871890383196127232) - (1202691228085059344*Ts*(xk2*((1605240352503639*Ts)/72057594037927936 - 1) - (1605240352503639*Ts*xk1)/72057594037927936))/(1422609156378057887*Ts + 8026201762518195000*F_neu*Ts**2 + 360287970189639680000*F_neu*Ts + 9871890383196127232), (219917928292998543*Ts*((548673005513257*Ts*xk2)/4503599627370496 - xk1*((Ts*((10000*Fk)/137 + 548673005513257/2251799813685248))/2 - 1) + (5000*Fk*Ts*uk)/137 + (5000*F_neu*Ts*uk1)/137))/(1422609156378057887*Ts + 8026201762518195000*F_neu*Ts**2 + 360287970189639680000*F_neu*Ts + 9871890383196127232) - (16*(xk2*((1605240352503639*Ts)/72057594037927936 - 1) - (1605240352503639*Ts*xk1)/72057594037927936)*(75168201755316209*Ts + 22517998136852480000*F_neu*Ts + 616993148949757952))/(1422609156378057887*Ts + 8026201762518195000*F_neu*Ts**2 + 360287970189639680000*F_neu*Ts + 9871890383196127232)])
         # Berechne Ausgang
         self.y = self.C @ self.x + self.D @ self.u_alt
         
         # Speichere den neuen Zustand
         self.x = self.x_neu
-        #print("x: ",self.x.shape)
-
         self.u_alt = uk1
+  
+        return self.y
+
+class mischventil:
+    def __init__(self, startwert):
+        self.T_M = np.array([startwert])
+
+    def update(self, F1, F2, F3 ,T_BP2,T_WT2):
+        if F1 > 0:
+            self.T_M = (T_BP2*F2 + T_WT2*F3)/F1
+        
+        return self.T_M
+
+class wärmetauscher:
+    # Beschreibung WT
+    def __init__(self,dt, startwert):
+        self.C=np.array([0, 1, 0, 0])
+        self.D=np.array([0, 0])
+        self.dt = dt
+        self.startwert = startwert
+        self.x = np.array([[startwert], [startwert], [startwert], [startwert]])
+        self.F_neu = 0
+        self.u1_alt = np.array([0])
+        self.u2_alt = np.array([0])
+
+    def update(self, F,T_tank, T_kuehl):
+        F_neu = F
+        uk11 = T_tank
+        uk12 = T_kuehl
+
+        uk1 = self.u1_alt
+        uk2 = self.u2_alt
+
+        Fk = self.F_neu
+        self.F_neu = F_neu
+        Ts = self.dt
+        xk1 = self.x[0]
+        xk2 = self.x[1]
+        xk3 = self.x[2]
+        xk4 = self.x[3]
+        
+        # Berechne zustand
+        self.x_neu = np.array([(3.93965e+76*xk1 + 1.33081e+76*Ts*xk1 + 2.99768e+74*Ts*xk3 + 2.99768e+74*Ts*xk4 + 2.50938e+73*Ts**2*uk2 + 8.63053e+72*Ts**3*uk2 + 6.4217e+70*Ts**4*uk2 + 2.50938e+73*Ts**2*uk12 + 8.63053e+72*Ts**3*uk12 + 6.4217e+70*Ts**4*uk12 + 1.12159e+75*Ts**2*xk1 + 4.43264e+71*Ts**2*xk2 - 7.6713e+71*Ts**3*xk1 + 1.031e+74*Ts**2*xk3 + 1.11973e+71*Ts**3*xk2 - 6.4217e+70*Ts**4*xk1 + 5.29119e+73*Ts**2*xk4 + 7.6713e+71*Ts**3*xk3 + 3.85252e+71*Ts**3*xk4 + 1.10428e+79*F_neu**2*Ts**2*uk11 + 3.73026e+78*F_neu**2*Ts**3*uk11 + 3.1502e+77*F_neu**2*Ts**4*uk11 + 6.59581e+77*Fk*Ts*uk1 + 6.59581e+77*F_neu*Ts*uk11 - 6.59581e+77*Fk*Ts*xk1 + 6.59581e+77*F_neu*Ts*xk1 + 2.27825e+77*Fk*Ts**2*uk1 + 2.05076e+76*Fk*Ts**3*uk1 + 1.42234e+74*Fk*Ts**4*uk1 + 4.20124e+74*F_neu*Ts**3*uk2 + 1.41297e+74*F_neu*Ts**4*uk2 + 2.27825e+77*F_neu*Ts**2*uk11 + 2.05076e+76*F_neu*Ts**3*uk11 + 4.20124e+74*F_neu*Ts**3*uk12 + 1.42234e+74*F_neu*Ts**4*uk11 + 1.41297e+74*F_neu*Ts**4*uk12 - 2.27825e+77*Fk*Ts**2*xk1 - 2.05039e+76*Fk*Ts**3*xk1 + 2.17788e+77*F_neu*Ts**2*xk1 - 3.71059e+72*Fk*Ts**3*xk2 - 1.41297e+74*Fk*Ts**4*xk1 + 1.71244e+76*F_neu*Ts**3*xk1 - 9.37335e+71*Fk*Ts**4*xk2 + 5.01876e+75*F_neu*Ts**2*xk3 + 3.71059e+72*F_neu*Ts**3*xk2 - 1.42234e+74*F_neu*Ts**4*xk1 + 5.01876e+75*F_neu*Ts**2*xk4 + 1.68792e+75*F_neu*Ts**3*xk3 + 9.37335e+71*F_neu*Ts**4*xk2 + 8.4767e+74*F_neu*Ts**3*xk4 + 1.10428e+79*Fk*F_neu*Ts**2*uk1 + 3.73026e+78*Fk*F_neu*Ts**3*uk1 + 3.1502e+77*Fk*F_neu*Ts**4*uk1 - 1.10428e+79*Fk*F_neu*Ts**2*xk1 - 3.73026e+78*Fk*F_neu*Ts**3*xk1 - 3.1502e+77*Fk*F_neu*Ts**4*xk1)/(1.39077e+76*Ts + 4.55651e+77*F_neu*Ts**2 + 4.10116e+76*F_neu*Ts**3 + 2.83531e+74*F_neu*Ts**4 + 1.32823e+75*Ts**2 + 1.77583e+73*Ts**3 + 6.4217e+70*Ts**4 + 1.10428e+79*F_neu**2*Ts**2 + 3.73026e+78*F_neu**2*Ts**3 + 3.1502e+77*F_neu**2*Ts**4 + 1.31916e+78*F_neu*Ts + 3.93965e+76), (3.93965e+76*xk2 + 1.33081e+76*Ts*xk2 + 2.99768e+74*Ts*xk3 + 2.99768e+74*Ts*xk4 + 2.50938e+73*Ts**2*uk2 + 8.63053e+72*Ts**3*uk2 + 6.4217e+70*Ts**4*uk2 + 2.50938e+73*Ts**2*uk12 + 8.63053e+72*Ts**3*uk12 + 6.4217e+70*Ts**4*uk12 + 4.43264e+71*Ts**2*xk1 + 1.12159e+75*Ts**2*xk2 + 1.11973e+71*Ts**3*xk1 + 1.031e+74*Ts**2*xk3 - 7.6713e+71*Ts**3*xk2 + 5.29119e+73*Ts**2*xk4 + 7.6713e+71*Ts**3*xk3 - 6.4217e+70*Ts**4*xk2 + 3.85252e+71*Ts**3*xk4 + 1.10428e+79*F_neu**2*Ts**2*uk11 + 3.73026e+78*F_neu**2*Ts**3*uk11 + 3.1502e+77*F_neu**2*Ts**4*uk11 + 6.59581e+77*Fk*Ts*xk1 - 6.59581e+77*Fk*Ts*xk2 + 6.59581e+77*F_neu*Ts*xk1 + 6.59581e+77*F_neu*Ts*xk2 + 3.71059e+72*Fk*Ts**3*uk1 + 9.37335e+71*Fk*Ts**4*uk1 + 8.40248e+74*F_neu*Ts**3*uk2 + 2.82594e+74*F_neu*Ts**4*uk2 + 3.71059e+72*F_neu*Ts**3*uk11 + 8.40248e+74*F_neu*Ts**3*uk12 + 9.37335e+71*F_neu*Ts**4*uk11 + 2.82594e+74*F_neu*Ts**4*uk12 + 2.27825e+77*Fk*Ts**2*xk1 - 2.27825e+77*Fk*Ts**2*xk2 + 2.05039e+76*Fk*Ts**3*xk1 + 2.17788e+77*F_neu*Ts**2*xk1 - 2.05076e+76*Fk*Ts**3*xk2 + 1.41297e+74*Fk*Ts**4*xk1 + 2.17788e+77*F_neu*Ts**2*xk2 + 1.71281e+76*F_neu*Ts**3*xk1 - 1.42234e+74*Fk*Ts**4*xk2 + 1.00375e+76*F_neu*Ts**2*xk3 + 1.71281e+76*F_neu*Ts**3*xk2 - 1.41297e+74*F_neu*Ts**4*xk1 + 1.00375e+76*F_neu*Ts**2*xk4 + 3.37584e+75*F_neu*Ts**3*xk3 - 1.41297e+74*F_neu*Ts**4*xk2 + 1.69534e+75*F_neu*Ts**3*xk4 + 1.10428e+79*Fk*F_neu*Ts**2*uk1 + 3.73026e+78*Fk*F_neu*Ts**3*uk1 + 3.1502e+77*Fk*F_neu*Ts**4*uk1 - 1.10428e+79*Fk*F_neu*Ts**2*xk2 - 3.73026e+78*Fk*F_neu*Ts**3*xk2 - 3.1502e+77*Fk*F_neu*Ts**4*xk2)/(1.39077e+76*Ts + 4.55651e+77*F_neu*Ts**2 + 4.10116e+76*F_neu*Ts**3 + 2.83531e+74*F_neu*Ts**4 + 1.32823e+75*Ts**2 + 1.77583e+73*Ts**3 + 6.4217e+70*Ts**4 + 1.10428e+79*F_neu**2*Ts**2 + 3.73026e+78*F_neu**2*Ts**3 + 3.1502e+77*F_neu**2*Ts**4 + 1.31916e+78*F_neu*Ts + 3.93965e+76), (0.125*(3.15172e+77*xk3 + 5.27665e+76*Ts*uk2 + 5.27665e+76*Ts*uk12 + 4.6604e+74*Ts*xk1 + 4.6604e+74*Ts*xk2 + 4.7963e+75*Ts*xk3 + 9.71526e+75*Ts**2*uk2 + 1.38385e+74*Ts**3*uk2 + 5.13736e+71*Ts**4*uk2 + 9.71526e+75*Ts**2*uk12 + 1.38385e+74*Ts**3*uk12 + 5.13736e+71*Ts**4*uk12 + 8.22603e+73*Ts**2*xk1 + 8.22603e+73*Ts**2*xk2 + 5.98938e+71*Ts**3*xk1 - 8.97273e+75*Ts**2*xk3 + 5.98938e+71*Ts**3*xk2 + 3.54611e+72*Ts**2*xk4 - 1.35929e+74*Ts**3*xk3 + 2.69824e+70*Ts**3*xk4 - 5.13736e+71*Ts**4*xk3 + 1.47904e+79*F_neu**2*Ts**3*uk2 + 2.4981e+78*F_neu**2*Ts**4*uk2 + 1.30631e+77*F_neu**2*Ts**3*uk11 + 1.47904e+79*F_neu**2*Ts**3*uk12 + 2.20635e+76*F_neu**2*Ts**4*uk11 + 2.4981e+78*F_neu**2*Ts**4*uk12 + 6.53153e+76*F_neu**2*Ts**3*xk1 + 8.83424e+79*F_neu**2*Ts**2*xk3 + 6.53153e+76*F_neu**2*Ts**3*xk2 + 1.10318e+76*F_neu**2*Ts**4*xk1 + 1.10318e+76*F_neu**2*Ts**4*xk2 - 2.52016e+78*F_neu**2*Ts**4*xk3 + 1.05533e+79*F_neu*Ts*xk3 + 3.90125e+75*Fk*Ts**2*uk1 + 6.88607e+74*Fk*Ts**3*uk1 + 5.01375e+72*Fk*Ts**4*uk1 + 1.76685e+78*F_neu*Ts**2*uk2 + 3.11865e+77*F_neu*Ts**3*uk2 + 2.26323e+75*F_neu*Ts**4*uk2 + 3.90125e+75*F_neu*Ts**2*uk11 + 1.76685e+78*F_neu*Ts**2*uk12 + 6.88607e+74*F_neu*Ts**3*uk11 + 3.11865e+77*F_neu*Ts**3*uk12 + 5.01375e+72*F_neu*Ts**4*uk11 + 2.26323e+75*F_neu*Ts**4*uk12 - 3.90125e+75*Fk*Ts**2*xk2 + 1.5605e+76*F_neu*Ts**2*xk1 - 6.88607e+74*Fk*Ts**3*xk2 + 1.17038e+76*F_neu*Ts**2*xk2 + 2.63569e+75*F_neu*Ts**3*xk1 - 5.01375e+72*Fk*Ts**4*xk2 + 8.03002e+76*F_neu*Ts**2*xk3 + 2.00645e+75*F_neu*Ts**3*xk2 - 3.01056e+77*F_neu*Ts**3*xk3 + 5.01375e+72*F_neu*Ts**4*xk2 + 8.90541e+73*F_neu*Ts**3*xk4 - 2.26825e+75*F_neu*Ts**4*xk3 + 1.30631e+77*Fk*F_neu*Ts**3*uk1 + 2.20635e+76*Fk*F_neu*Ts**4*uk1 - 6.53153e+76*Fk*F_neu*Ts**3*xk1 - 6.53153e+76*Fk*F_neu*Ts**3*xk2 - 1.10318e+76*Fk*F_neu*Ts**4*xk1 - 1.10318e+76*Fk*F_neu*Ts**4*xk2))/(1.39077e+76*Ts + 4.55651e+77*F_neu*Ts**2 + 4.10116e+76*F_neu*Ts**3 + 2.83531e+74*F_neu*Ts**4 + 1.32823e+75*Ts**2 + 1.77583e+73*Ts**3 + 6.4217e+70*Ts**4 + 1.10428e+79*F_neu**2*Ts**2 + 3.73026e+78*F_neu**2*Ts**3 + 3.1502e+77*F_neu**2*Ts**4 + 1.31916e+78*F_neu*Ts + 3.93965e+76), (0.125*(3.15172e+77*xk4 + 4.6604e+74*Ts*xk1 + 4.6604e+74*Ts*xk2 + 1.05533e+77*Ts*xk3 + 4.7963e+75*Ts*xk4 + 8.83424e+75*Ts**2*uk2 + 1.34737e+74*Ts**3*uk2 + 5.13736e+71*Ts**4*uk2 + 8.83424e+75*Ts**2*uk12 + 1.34737e+74*Ts**3*uk12 + 5.13736e+71*Ts**4*uk12 + 1.60285e+74*Ts**2*xk1 + 1.60285e+74*Ts**2*xk2 + 1.19263e+72*Ts**3*xk1 + 1.60955e+75*Ts**2*xk3 + 1.19263e+72*Ts**3*xk2 - 8.97273e+75*Ts**2*xk4 + 6.13704e+72*Ts**3*xk3 - 1.35929e+74*Ts**3*xk4 - 5.13736e+71*Ts**4*xk4 + 2.47623e+78*F_neu**2*Ts**4*uk2 + 1.30631e+77*F_neu**2*Ts**3*uk11 + 4.39339e+76*F_neu**2*Ts**4*uk11 + 2.47623e+78*F_neu**2*Ts**4*uk12 + 6.53153e+76*F_neu**2*Ts**3*xk1 + 6.53153e+76*F_neu**2*Ts**3*xk2 + 2.19669e+76*F_neu**2*Ts**4*xk1 + 8.83424e+79*F_neu**2*Ts**2*xk4 + 2.95808e+79*F_neu**2*Ts**3*xk3 + 2.19669e+76*F_neu**2*Ts**4*xk2 - 2.52016e+78*F_neu**2*Ts**4*xk4 + 1.05533e+79*F_neu*Ts*xk4 + 3.90125e+75*Fk*Ts**2*uk1 + 1.34176e+75*Fk*Ts**3*uk1 + 9.98361e+72*Fk*Ts**4*uk1 + 2.95808e+77*F_neu*Ts**3*uk2 + 2.25826e+75*F_neu*Ts**4*uk2 + 3.90125e+75*F_neu*Ts**2*uk11 + 1.34176e+75*F_neu*Ts**3*uk11 + 2.95808e+77*F_neu*Ts**3*uk12 + 9.98361e+72*F_neu*Ts**4*uk11 + 2.25826e+75*F_neu*Ts**4*uk12 - 3.90125e+75*Fk*Ts**2*xk2 + 1.5605e+76*F_neu*Ts**2*xk1 - 1.34176e+75*Fk*Ts**3*xk2 + 1.17038e+76*F_neu*Ts**2*xk2 + 5.2483e+75*F_neu*Ts**3*xk1 - 9.98361e+72*Fk*Ts**4*xk2 + 3.53369e+78*F_neu*Ts**2*xk3 + 3.96591e+75*F_neu*Ts**3*xk2 + 8.03002e+76*F_neu*Ts**2*xk4 + 2.6977e+76*F_neu*Ts**3*xk3 + 9.98361e+72*F_neu*Ts**4*xk2 - 3.01056e+77*F_neu*Ts**3*xk4 - 2.26825e+75*F_neu*Ts**4*xk4 + 1.30631e+77*Fk*F_neu*Ts**3*uk1 + 4.39339e+76*Fk*F_neu*Ts**4*uk1 - 6.53153e+76*Fk*F_neu*Ts**3*xk1 - 6.53153e+76*Fk*F_neu*Ts**3*xk2 - 2.19669e+76*Fk*F_neu*Ts**4*xk1 - 2.19669e+76*Fk*F_neu*Ts**4*xk2))/(1.39077e+76*Ts + 4.55651e+77*F_neu*Ts**2 + 4.10116e+76*F_neu*Ts**3 + 2.83531e+74*F_neu*Ts**4 + 1.32823e+75*Ts**2 + 1.77583e+73*Ts**3 + 6.4217e+70*Ts**4 + 1.10428e+79*F_neu**2*Ts**2 + 3.73026e+78*F_neu**2*Ts**3 + 3.1502e+77*F_neu**2*Ts**4 + 1.31916e+78*F_neu*Ts + 3.93965e+76)])
+
+        # Berechne Ausgang
+        self.y = self.C @ self.x + self.D @ np.array([self.u1_alt,self.u2_alt])
+        
+        # Speichere den neuen Zustand
+        self.x = self.x_neu
+        self.u1_alt = uk11
+        self.u2_alt = uk12
 
         return self.y
 
+class F_nach_r:
+    # Beschreibung F nach r
+    def update(F,r):
+        if r>0.999:
+            r=0.999
+        else: 
+            if r<0.001:
+                r=0.001
+        F1 = F
+        F3 = F1 * r
+        F2 = F1 - F3
+        return [F1, F2 ,F3]
+
+class PIDRegler:
+    # 
+    def __init__(self, Kp, Ki, Kd, dt):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.dt = dt
+        self.letzter_fehler = 0
+        self.integral = 0
+
+    def update(self, fehler):
+        fehler = -fehler
+        # Proportionaler Term
+        P = self.Kp * fehler
+
+        # Integraler Term
+        self.integral = self.integral + self.Ki * fehler * self.dt
+        self.integral = max(0, min(1 , self.integral))
+        I = self.integral
+        #print("I: ",I, "fehler: ",fehler)
+        # Differentialer Term
+        differential = (fehler - self.letzter_fehler) / self.dt
+        D = self.Kd * differential
+
+        # Steuerwert berechnen
+        stellwert = P + I + D
+
+        # Letzten Fehler aktualisieren
+        self.letzter_fehler = fehler
+
+        if stellwert > 1:
+            stellwert = 1
+        elif stellwert < 0:
+            stellwert = 0
+            
+        return stellwert
+
+class testklasse:
+    # Beschreibung F nach r
+    def update(F,r):
+        if r>0.999:
+            r=0.999
+        else: 
+            if r<0.001:
+                r=0.001
+        F1 = F
+        F3 = F1 * r
+        F2 = F1 - F3
+        return [F1, F2 ,F3]
+
 
 if __name__ == "__main__":
- 
     
-    rr = []  # Initialisierung der Liste rr
-
-    for n in range(10):
-        rr.append(testklasse(dt=0.1, startwert=100))  # Objekte zur Liste rr hinzufügen
     
+    
+    dt = 0.5
+    startwert = 70
+    F = 0.001
 
-    for i in range(100):
-        input = np.array([80])
-        for r in rr:
-            print("input :",input)
-            input = r.update(input=input,F_neu=0.001)
-        print("\n")
+    wt = wärmetauscher(dt=dt, startwert= startwert)
+   
+    tot1 = Transportdelay(n_Bins=1000,volumen=0.001486098988854,startwert=startwert)
+    tot2 = Transportdelay(n_Bins=1000,volumen=0.005972953032638,startwert=startwert)
+    tot3 = Transportdelay(n_Bins=1000,volumen=0.003664353671147,startwert=startwert)
+    tot4 = Transportdelay(n_Bins=1000,volumen=0.020497478347979,startwert=startwert)
+
+    rohr1 = rohrstück_1(dt=dt,startwert=startwert)
+    rohr2 = rohrstück_2(dt=dt,startwert=startwert)
+
+    misch = mischventil(startwert=startwert)    
+
+    T_tank = np.array([100])
+  
+    start = time.time()
+
+    for i in range(10):
+        if i>1000:
+            r = 0.8
+        else: 
+            r  = 0.2
+
+        [F1, F2 ,F3] = F_nach_r.update(F=F, r = r)
+
+        T_BP1 = rohr1.update(F=F2, input=T_tank)
+        T_BP2 = tot1.update(F=F2,input=T_BP1,dt=dt)
+
+        T_WT1 = wt.update(F=F3,T_tank=T_tank,T_kuehl=np.array([20]))
+        T_WT2 = tot2.update(F=F3, input=T_WT1,dt=dt)
+
+        T_M =   misch.update(F1=F1,F2 = F2,F3 = F3,T_BP2=T_BP2,T_WT2=T_WT2)
+        
+        T_D40 = tot3.update(F=F, input=T_M,dt=dt)
+        T_T_1 = rohr2.update(F=F, input= T_D40)
+        T_T_2 = tot4.update(F=F, input=T_T_1, dt=dt)
+        
+    end = time.time()
+    print("Zeit: {:0>5.1f} Sekunden\tT_BP1: {:0>3.3f}\tT_BP2: {:0>3.3f}\tT_WT1: {:0>3.3f}\tT_WT2: {:0>3.3f}\tT_M: {:0>3.3f}\tT_D40: {:0>3.3f}\tT_T_1: {:0>3.3f}\tT_T_2: {:0>3.3f}\tBenötigte Zeit: {:0>4.1f} ms".format(i*dt, T_BP1[0], T_BP2[0], T_WT1[0], T_WT2[0], T_M[0], T_D40[0], T_T_1[0], T_T_2[0], (end-start)*1000))
