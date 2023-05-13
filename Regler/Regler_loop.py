@@ -55,7 +55,8 @@ class Regler:
             ##################### Regler fertig ####################
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-    
+            print("benötigte zeit: ",elapsed_time)
+
     def loop_stop(self):
         self.terminate = True
         self.thread.join()

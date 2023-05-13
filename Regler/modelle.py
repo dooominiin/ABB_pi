@@ -203,14 +203,20 @@ class F_nach_r:
 
 class PIDRegler:
     # 
-    def __init__(self, Kp, Ki, Kd, dt):
+    def __init__(self, Kp, Ki, Kd, dt, minimalwert, maximalwert):
         self.Kp = Kp
         self.Ki = Ki
         self.Kd = Kd
         self.dt = dt
+        self.minimalwert = minimalwert
+        self.maximalwert = maximalwert
         self.letzter_fehler = 0
         self.integral = 0
 
+    def set_limits(self, minimalwert, maximalwert):
+        self.minimalwert = minimalwert
+        self.maximalwert = maximalwert
+    
     def update(self, fehler):
         fehler = -fehler
         # Proportionaler Term
@@ -218,7 +224,7 @@ class PIDRegler:
 
         # Integraler Term
         self.integral = self.integral + self.Ki * fehler * self.dt
-        self.integral = max(0, min(1 , self.integral))
+        self.integral = max(self.minimalwert, min(self.maximalwert , self.integral))
         I = self.integral
         #print("I: ",I, "fehler: ",fehler)
         # Differentialer Term
@@ -231,10 +237,10 @@ class PIDRegler:
         # Letzten Fehler aktualisieren
         self.letzter_fehler = fehler
 
-        if stellwert > 1:
-            stellwert = 1
-        elif stellwert < 0:
-            stellwert = 0
+        if stellwert > self.maximalwert:
+            stellwert = self.maximalwert
+        elif stellwert < self.minimalwert:
+            stellwert = self.minimalwert
             
         return stellwert
 

@@ -2,7 +2,7 @@ from OPC.opcua_client import OpcUaClient
 from Regler.Regler_loop import Regler
 import time
 
-r = Regler(dt = 0.1)
+r = Regler(dt = 0.01)
 c = OpcUaClient(dt = 0.01,regler = r)
 
 c.loop_start()
