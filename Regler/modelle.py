@@ -218,7 +218,7 @@ class PIDRegler:
         self.maximalwert = maximalwert
     
     def update(self, fehler):
-        fehler = -fehler
+        fehler = fehler
         # Proportionaler Term
         P = self.Kp * fehler
 

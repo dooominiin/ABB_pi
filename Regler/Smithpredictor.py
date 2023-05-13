@@ -36,10 +36,13 @@ class Smithpredictor:
 
         self.misch = mischventil(startwert=startwert)    
 
-        self.F_regler = PIDRegler(Kp = -1, Ki = -0.02, Kd = 0 , dt = self.dt, minimalwert=20, maximalwert=120)
-        self.K_regler = PIDRegler(Kp = 0.6, Ki = 0.06*0.6, Kd = 450*0.6 , dt = self.dt, minimalwert=-200, maximalwert=200)
+        self.F_regler = PIDRegler(Kp = -1, Ki = -0.02, Kd = 0 , dt = self.dt, minimalwert=-60, maximalwert=60)
+        self.K_regler = PIDRegler(Kp = 0.6, Ki = 0.06, Kd = 450 , dt = self.dt, minimalwert=-200, maximalwert=200)
+        self.K_regler = PIDRegler(Kp = 0, Ki = 0, Kd = 0 , dt = self.dt, minimalwert=-200, maximalwert=200)
         self.V_K_regler = PIDRegler(Kp = -0.25, Ki = -0.15, Kd = 0 , dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_K_regler = PIDRegler(Kp = -0.005, Ki = -0.0015, Kd = 0 , dt = self.dt, minimalwert=0, maximalwert=1)
         self.V_F_regler = PIDRegler(Kp = 0.0005, Ki = 0.00005, Kd = 0.003 , dt = self.dt, minimalwert=0, maximalwert=1)
+        #self.V_F_regler = PIDRegler(Kp = 0.000, Ki = 0.0000, Kd = 0.00 , dt = self.dt, minimalwert=0, maximalwert=1)
 
         #################### init für simulierte anlage
         self.wt_anlage = wärmetauscher(dt=self.dt, startwert=startwert)
@@ -58,7 +61,6 @@ class Smithpredictor:
 
     def update(self, input):
         F  = 0.001
-        r = self.r
         s = 75
         #T_D40 = np.array([70])
         T_tank = np.array([90])
@@ -87,10 +89,10 @@ class Smithpredictor:
         f = self.F_regler.update(fehler =TOELE-T_T_2)
         s_k = f + s
         s_k2 = s_k-T_T_1
-        self.K_regler.set_limits(minimalwert=T_kuehl-s_k2 , maximalwert=T_tank-s_k2)
-        s_k3 = self.K_regler.update(fehler =s_k2)
-        s_V = s_k3 + s_k
-        s_V_K = s_V + self.T_V_tilde
+        self.K_regler.set_limits(minimalwert=T_kuehl-s_k , maximalwert=T_tank-s_k)
+        k = self.K_regler.update(fehler =s_k2)
+        s_V = k + s_k
+        s_V_K = s_V - self.T_V_tilde
         r_tilde = self.V_K_regler.update(fehler= s_V_K)
         ##########  V~  ######################################################
         [self.F1, self.F2, self.F3] = F_nach_r.update(F=F, r=r_tilde)
@@ -107,10 +109,13 @@ class Smithpredictor:
         self.r = m + r_tilde
         ##########  ende smithpredictor  ##############################################
 
-        
-        print("Smithpredictor rechnet \t\ts: {:.2f}\tr: {:.2f}\t\tT_M: {:.2f}\T_V2: {:.2f}\tT_WT1: {:.2f}\tF3: {:.4f}".format(
-            float(s), float(r_tilde), float(self.T_V_tilde), float(T_V2), float(T_WT1), float(self.F3)))
-        
+        print("\n\n\n\n\n")
+        print("Smithpredictor rechnet \tT_V_tilde: {:.2f}\tr_tilde: {:.2f}\t\tT_M: {:.2f}\tT_V2: {:.2f}\ts_V_K: {:.2f}\ts_V: {:.4f}".format(
+            float(self.T_V_tilde), float(r_tilde), float(self.T_V_tilde), float(T_V2), float(s_V_K), float(s_V)))
+        print("Smithpredictor rechnet \ts: {:.2f}\tr: {:.2f}\t\tT_D40: {:.2f}\tTOELE: {:.2f}\tT_T_2: {:.2f}\tf: {:.2f}".format(
+            float(s), float(self.r), float(T_D40), float(TOELE), float(T_T_2),float(f)))
+        print("Smithpredictor rechnet \ts_k2: {:.2f}\tk: {:.2f}".format(float(s_k2), float(k)))
+
         return self.r
     
   
