@@ -2,11 +2,13 @@ import time
 from threading import Thread
 from Regler.Smithpredictor import Smithpredictor
 import numpy as np
+import os
 
 class Regler:
     def __init__(self,dt):
         self.terminate = False
         self.thread = Thread(target=self.loop_forever)
+
         self.input = {
             "T_D40": 60,
             "T_tank": 60,
