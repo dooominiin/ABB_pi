@@ -38,9 +38,9 @@ class Smithpredictor:
 
         self.F_regler = PI_Regler(Kp = -1, Ki = -0.02, dt = self.dt, minimalwert=-60, maximalwert=60)
         self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06, dt = self.dt, minimalwert=-200, maximalwert=200)
-        self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200)
+        #self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200)
         self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1)
-        self.V_K_regler = PI_Regler(Kp = -0.005, Ki = -0.0015 , dt = self.dt, minimalwert=0, maximalwert=1)
+        #self.V_K_regler = PI_Regler(Kp = -0.005, Ki = -0.0015 , dt = self.dt, minimalwert=0, maximalwert=1)
         self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=0, maximalwert=1)
         #self.V_F_regler = PI_Regler(Kp = 0.000, Ki = 0.0000 , dt = self.dt, minimalwert=0, maximalwert=1)
 
