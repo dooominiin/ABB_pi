@@ -7,7 +7,26 @@ Created on Fri Feb 10 16:34:38 2023
 # link zur diskretisierung mit tustin: https://ch.mathworks.com/support/search.html/answers/578164-why-do-i-get-different-outputs-with-bilinear-and-c2d-sysc-ts-tustin-matlab-functions.html?fq%5B%5D=asset_type_name:answer&fq%5B%5D=category:signal/pulse-and-transition-metrics&page=1
 import numpy as np
 import time
+class sensorfilter:
+    # mit Tustin(Trapez-methode) diskretisiert
+    def __init__(self,dt, Zeitkonstante, startwert):
+        self.t_filter = 1/Zeitkonstante*np.pi
+        self.dt = dt
+        self.xk = 0
+        self.xk1 = startwert
+        self.uk1 = 0
+    
+    def update(self, input):
+        uk = self.uk1 
+        uk1 = input
+        self.uk1 = uk1
+        self.xk = self.xk1
 
+        self.xk1 = ((self.dt*self.t_filter*uk)/2 - self.xk*((self.dt*self.t_filter)/2 - 1) + (self.dt*self.t_filter*uk1)/2)/((self.dt*self.t_filter)/2 + 1)
+        self.output = self.xk
+       
+        return np.ravel(np.array([self.output]))    
+ 
 class Transportdelay:
     # Die Klasse Transportdelay(n_Bins, volumen, startwert) erzeug
     # ein Objekt, dass ein Transportdelay wie in einem mit Flüssigkeit 
@@ -145,7 +164,7 @@ class mischventil:
         if F1 > 0:
             self.T_M = (T_BP2*F2 + T_WT2*F3)/F1
         
-        return self.T_M
+        return np.ravel(np.array([self.T_M]))
 
 class wärmetauscher:
     # Beschreibung WT
@@ -294,9 +313,20 @@ if __name__ == "__main__":
     
     
     
-    dt = 0.5
+
+
+    dt = 0.1
     startwert = 70
     F = 0.001
+
+    fil = sensorfilter(dt=dt, Zeitkonstante=10)
+    inp = 1
+    for m in range(int(10/dt)):
+        inp = fil.update(1)
+        print("value: ", inp)
+
+
+
 
     wt = wärmetauscher(dt=dt, startwert= startwert)
    
