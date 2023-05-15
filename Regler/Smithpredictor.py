@@ -4,7 +4,7 @@ from Regler.modelle import rohrstück_2
 from Regler.modelle import wärmetauscher
 from Regler.modelle import F_nach_r
 from Regler.modelle import mischventil
-from Regler.modelle import PIDRegler
+from Regler.modelle import PI_Regler
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -36,13 +36,13 @@ class Smithpredictor:
 
         self.misch = mischventil(startwert=startwert)    
 
-        self.F_regler = PIDRegler(Kp = -1, Ki = -0.02, Kd = 0 , dt = self.dt, minimalwert=-60, maximalwert=60)
-        self.K_regler = PIDRegler(Kp = 0.6, Ki = 0.06, Kd = 450 , dt = self.dt, minimalwert=-200, maximalwert=200)
-        self.K_regler = PIDRegler(Kp = 0, Ki = 0, Kd = 0 , dt = self.dt, minimalwert=-200, maximalwert=200)
-        self.V_K_regler = PIDRegler(Kp = -0.25, Ki = -0.15, Kd = 0 , dt = self.dt, minimalwert=0, maximalwert=1)
-        self.V_K_regler = PIDRegler(Kp = -0.005, Ki = -0.0015, Kd = 0 , dt = self.dt, minimalwert=0, maximalwert=1)
-        self.V_F_regler = PIDRegler(Kp = 0.0005, Ki = 0.00005, Kd = 0.003 , dt = self.dt, minimalwert=0, maximalwert=1)
-        #self.V_F_regler = PIDRegler(Kp = 0.000, Ki = 0.0000, Kd = 0.00 , dt = self.dt, minimalwert=0, maximalwert=1)
+        self.F_regler = PI_Regler(Kp = -1, Ki = -0.02, dt = self.dt, minimalwert=-60, maximalwert=60)
+        self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06, dt = self.dt, minimalwert=-200, maximalwert=200)
+        self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200)
+        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_K_regler = PI_Regler(Kp = -0.005, Ki = -0.0015 , dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=0, maximalwert=1)
+        #self.V_F_regler = PI_Regler(Kp = 0.000, Ki = 0.0000 , dt = self.dt, minimalwert=0, maximalwert=1)
 
         #################### init für simulierte anlage
         self.wt_anlage = wärmetauscher(dt=self.dt, startwert=startwert)

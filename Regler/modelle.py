@@ -202,7 +202,7 @@ class F_nach_r:
         return [F1, F2 ,F3]
 
 class PIDRegler:
-    # 
+    # Achtung forward euler, nicht immer stabil
     def __init__(self, Kp, Ki, Kd, dt, minimalwert, maximalwert):
         self.Kp = Kp
         self.Ki = Ki
@@ -243,6 +243,38 @@ class PIDRegler:
             stellwert = self.minimalwert
             
         return stellwert
+
+class PI_Regler:
+ # mit Tustin(Trapez-methode) diskretisiert
+    def __init__(self, Kp, Ki, dt, minimalwert, maximalwert):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.dt = dt
+        self.minimalwert = minimalwert
+        self.maximalwert = maximalwert
+        self.xk = 0
+        self.xk1 = 0
+        self.uk1 = 0
+
+    def set_limits(self, minimalwert, maximalwert):
+        self.minimalwert = minimalwert
+        self.maximalwert = maximalwert
+    
+    def update(self, fehler):
+        uk = self.uk1 
+        uk1 = fehler
+        self.uk1 = uk1
+        self.xk = self.xk1
+
+        self.xk1 = self.xk + (self.dt*self.Ki*uk)/2 + (self.dt*self.Ki*uk1)/2
+        stellwert = self.xk + self.Kp * uk1
+
+        if stellwert > self.maximalwert:
+            stellwert = self.maximalwert
+        elif stellwert < self.minimalwert:
+            stellwert = self.minimalwert
+            
+        return stellwert    
 
 class testklasse:
     # Beschreibung F nach r
