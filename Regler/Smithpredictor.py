@@ -17,7 +17,8 @@ class Smithpredictor:
     def __init__(self, dt):
         self.dt = dt
         startwert = 70
-    
+        self.zähler = 0
+
         self.r = 0.5
         self.T_V_tilde = startwert
         self.F1 = 0.001
@@ -52,16 +53,16 @@ class Smithpredictor:
 
 
 
-        self.F_regler = PI_Regler(Kp = -1, Ki = -0.02, dt = self.dt, minimalwert=-60, maximalwert=60)
-        self.F_regler = PI_Regler(Kp = -1, Ki = -0.02, dt = self.dt, minimalwert=-60, maximalwert=60)
+        self.F_regler = PI_Regler(Kp = -1, Ki = -0.02, dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
+        self.F_regler = PI_Regler(Kp = -1, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
         
-        self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06/0.6, dt = self.dt, minimalwert=-200, maximalwert=200)
+        self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06/0.6, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
         #self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200)
         
-        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=-99,antiwindup_upper=99, name = "V_K")
         #self.V_K_regler = PI_Regler(Kp = -0.005, Ki = -0.0015 , dt = self.dt, minimalwert=0, maximalwert=1)
         
-        self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=-99,antiwindup_upper=99, name = "V_F")
         #self.V_F_regler = PI_Regler(Kp = 0.000, Ki = 0.0000 , dt = self.dt, minimalwert=0, maximalwert=1)
 
 
@@ -94,17 +95,38 @@ class Smithpredictor:
 
         self.misch_anlage = mischventil(startwert=startwert)
 
-
+        
+        ############ log init ################
+        names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde"
+        with open("log.txt", "w") as file:
+            file.write(names + "\n")
 
     def update(self, input):
+        self.zähler += self.dt
         F  = 0.001
-        s = 75
+        s = 90
+        if self.zähler>500:
+            s = 85
+        if self.zähler>1000:
+            s = 80
+        if self.zähler>1500:
+            s = 75
+        if self.zähler>2000:
+            s = 70
+        if self.zähler>2500:
+            s = 65
+        if self.zähler>3000:
+            s = 60
+        if self.zähler>3500:
+            s = 85
+
+
         #T_D40 = np.array([70])
         T_tank = np.array([90])
         #TOELE = np.array([70])
         T_kuehl = np.array([23])
 
-        ##########  regelstrecke  ##############################################
+        ##########  regelstrecke (löschen für implementierung auf Teststand) ##############################################
         [F1, F2, F3] = F_nach_r.update(F=F, r=self.r)
         T1 = self.rohr1_anlage.update(F=F2, input= T_tank)
         T2 = self.tot1_anlage.update(F=F2, input=T1, dt=self.dt)
@@ -151,12 +173,20 @@ class Smithpredictor:
         self.r = m + r_tilde
         ##########  ende smithpredictor  ##############################################
 
-        print("\n\n\n\n\n")
-        print("Smithpredictor rechnet \tT_V_tilde: {:.2f}\tr_tilde: {:.2f}\t\tT_M: {:.2f}\tT_V2: {:.2f}\ts_V_K: {:.2f}\ts_V: {:.4f}".format(
-            float(self.T_V_tilde), float(r_tilde), float(self.T_V_tilde), float(T_V2), float(s_V_K), float(s_V)))
-        print("Smithpredictor rechnet \ts: {:.2f}\t\tr: {:.2f}\t\t\tT_D40: {:.2f}\tTOELE: {:.2f}\tT_T_2: {:.2f}\tf: {:.2f}".format(
-            float(s), float(self.r), float(T_D40), float(TOELE), float(T_T_2),float(f)))
-        print("Smithpredictor rechnet \ts_k2: {:.2f}\t\tk: {:.2f}".format(float(s_k2), float(k)))
+        
+
+        if False:
+            print("\n\n\n\n\nSmithpredictor rechnet \tT_V_tilde: {:.2f}\tr_tilde: {:.2f}\t\tT_M: {:.2f}\tT_V2: {:.2f}\ts_V_K: {:.2f}\ts_V: {:.4f}".format(
+                float(self.T_V_tilde), float(r_tilde), float(self.T_V_tilde), float(T_V2), float(s_V_K), float(s_V)))
+            print("Smithpredictor rechnet \ts: {:.2f}\t\tr: {:.2f}\t\t\tT_D40: {:.2f}\tTOELE: {:.2f}\tT_T_2: {:.2f}\tf: {:.2f}".format(
+                float(s), float(self.r), float(T_D40), float(TOELE), float(T_T_2),float(f)))
+            print("Smithpredictor rechnet \ts_k2: {:.2f}\t\tk: {:.2f}".format(float(s_k2), float(k)))
+
+
+        ############ log ################
+        string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}".format(float(s),float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde))
+        with open("log.txt", "a") as file:
+            file.write(string + "\n")
 
         return self.r
     

@@ -51,6 +51,7 @@ class Regler:
 
     def loop_forever(self):
         while not self.terminate:
+            self.dt = 0   ### Achtung löschen für echtzeit !!!!!!
             start_time = time.time()  # Startzeit speichern
             ######################## Regler ########################
             self.output = self.Smithpredictor.update(self.input)

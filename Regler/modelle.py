@@ -265,12 +265,15 @@ class PIDRegler:
 
 class PI_Regler:
  # mit Tustin(Trapez-methode) diskretisiert
-    def __init__(self, Kp, Ki, dt, minimalwert, maximalwert):
+    def __init__(self, Kp, Ki, dt, minimalwert, maximalwert, antiwindup_upper, antiwindup_lower, name):
         self.Kp = Kp
         self.Ki = Ki
         self.dt = dt
         self.minimalwert = minimalwert
         self.maximalwert = maximalwert
+        self.antiwindup_upper = antiwindup_upper
+        self.antiwindup_lower = antiwindup_lower
+        self.name  = name
         self.xk = 0
         self.xk1 = 0
         self.uk1 = 0
@@ -284,6 +287,16 @@ class PI_Regler:
         uk1 = fehler
         self.uk1 = uk1
         self.xk = self.xk1
+        ## hier anti wind up einfügen
+        #print(self.name,"\t\tx: ",self.xk)
+        if self.xk >= self.maximalwert:
+            self.xk = self.maximalwert
+            #print(self.name," maximalwert erreicht!")
+        elif self.xk < self.minimalwert:
+            self.xk = self.minimalwert
+            #print(self.name," minimalwert erreicht!")
+
+
 
         self.xk1 = self.xk + (self.dt*self.Ki*uk)/2 + (self.dt*self.Ki*uk1)/2
         stellwert = self.xk + self.Kp * uk1
