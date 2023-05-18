@@ -55,10 +55,10 @@ class Smithpredictor:
 
 
         self.F_regler = PI_Regler(Kp = -1, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
-        self.F_regler = PI_Regler(Kp = 0, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
+        #self.F_regler = PI_Regler(Kp = 0, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
         
         self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06/0.6, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
-        self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
+        #self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
         
         self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
         self.V_K_regler = PI_Regler(Kp = -0.125, Ki = -0.075, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
@@ -104,7 +104,7 @@ class Smithpredictor:
 
     def update(self, input):
         self.zähler += self.dt
-        F  = 0.001
+        F  = 0.002
         s = 90
         if self.zähler>500:
             s = 85
@@ -158,6 +158,7 @@ class Smithpredictor:
         s_k = f + s
         s_k2 = s_k-T_T_1
         self.K_regler.set_limits(minimalwert=T_kuehl-s_k , maximalwert=T_tank-s_k,antiwindup_lower=T_kuehl-s_k , antiwindup_upper=T_tank-s_k)
+        self.K_regler.adaptParameters_K(F=F)
         k = self.K_regler.update(fehler =s_k2)
         s_V = k + s_k
         s_V_K = s_V - self.T_V_tilde
@@ -176,11 +177,11 @@ class Smithpredictor:
         T_V = self.tot3.update(F=self.F1, input=self.T_V_tilde, dt=self.dt)
         T_V2 = T_D40 - T_V 
         self.V_F_regler.adaptParameters(F=F, t_filter= self.filter_V.get_t_filter()*3,T_tank= T_tank, T_kuehl=T_kuehl)
+        self.V_F_regler.set_limits(minimalwert=-r_tilde, maximalwert=1-r_tilde, antiwindup_lower=-r_tilde, antiwindup_upper=1-r_tilde)
         m = self.V_F_regler.update(fehler= -T_V2)
         self.r = m + r_tilde
         
         ##########  ende smithpredictor  ##############################################
-        print("r: ",self.r)
         
 
         if False:

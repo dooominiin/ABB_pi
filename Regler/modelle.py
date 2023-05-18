@@ -326,6 +326,13 @@ class PI_Regler:
         self.Ki = t_filter * self.Kp
         #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp, "     max gain: ",max_gain)
 
+    def adaptParameters_K(self,F):
+        # soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
+
+        self.Kp = 0.6 
+        self.Ki = self.Kp * 0.06 / 0.001 *F
+        #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp)
+
 import numpy as np
 
 class LookupTable:
