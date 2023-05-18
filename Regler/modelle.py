@@ -278,10 +278,12 @@ class PI_Regler:
         self.xk1 = 0
         self.uk1 = 0
 
-    def set_limits(self, minimalwert, maximalwert):
+    def set_limits(self, minimalwert, maximalwert, antiwindup_upper, antiwindup_lower):
         self.minimalwert = minimalwert
         self.maximalwert = maximalwert
-    
+        self.antiwindup_upper = antiwindup_upper
+        self.antiwindup_lower = antiwindup_lower
+
     def update(self, fehler):
         uk = self.uk1 
         uk1 = fehler
@@ -289,11 +291,11 @@ class PI_Regler:
         self.xk = self.xk1
         ## hier anti wind up einfügen
         #print(self.name,"\t\tx: ",self.xk)
-        if self.xk >= self.maximalwert:
-            self.xk = self.maximalwert
+        if self.xk >= self.antiwindup_upper:
+            self.xk = self.antiwindup_upper
             #print(self.name," maximalwert erreicht!")
-        elif self.xk < self.minimalwert:
-            self.xk = self.minimalwert
+        elif self.xk < self.antiwindup_lower:
+            self.xk = self.antiwindup_lower
             #print(self.name," minimalwert erreicht!")
 
 

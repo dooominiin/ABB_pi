@@ -53,17 +53,17 @@ class Smithpredictor:
 
 
 
-        self.F_regler = PI_Regler(Kp = -1, Ki = -0.02, dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
         self.F_regler = PI_Regler(Kp = -1, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
+        self.F_regler = PI_Regler(Kp = 0, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
         
         self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06/0.6, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
-        #self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200)
+        self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
         
-        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=-99,antiwindup_upper=99, name = "V_K")
-        #self.V_K_regler = PI_Regler(Kp = -0.005, Ki = -0.0015 , dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
+        self.V_K_regler = PI_Regler(Kp = -0.125, Ki = -0.075, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
         
-        self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=-99,antiwindup_upper=99, name = "V_F")
-        #self.V_F_regler = PI_Regler(Kp = 0.000, Ki = 0.0000 , dt = self.dt, minimalwert=0, maximalwert=1)
+        self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=-1,antiwindup_upper=1, name = "V_F")
+        self.V_F_regler = PI_Regler(Kp = 0.000, Ki = 0.0000, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_F")
 
 
 
@@ -152,7 +152,7 @@ class Smithpredictor:
         f = self.F_regler.update(fehler =TOELE-T_T_2)
         s_k = f + s
         s_k2 = s_k-T_T_1
-        self.K_regler.set_limits(minimalwert=T_kuehl-s_k , maximalwert=T_tank-s_k)
+        self.K_regler.set_limits(minimalwert=T_kuehl-s_k , maximalwert=T_tank-s_k,antiwindup_lower=T_kuehl-s_k , antiwindup_upper=T_tank-s_k)
         k = self.K_regler.update(fehler =s_k2)
         s_V = k + s_k
         s_V_K = s_V - self.T_V_tilde
