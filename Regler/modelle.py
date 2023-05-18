@@ -26,7 +26,9 @@ class sensorfilter:
         self.output = self.xk
        
         return np.ravel(np.array([self.output]))    
- 
+    def get_t_filter(self):
+        return self.t_filter
+
 class Transportdelay:
     # Die Klasse Transportdelay(n_Bins, volumen, startwert) erzeug
     # ein Objekt, dass ein Transportdelay wie in einem mit Flüssigkeit 
@@ -45,7 +47,7 @@ class Transportdelay:
             
     def update(self, F, input, dt):
      
-
+        F = np.squeeze(F)
         input = input
         if F < 0 :
             raise ValueError("F darf nicht kleiner 0 sein!")     
@@ -55,7 +57,9 @@ class Transportdelay:
         k = self.number_Bins-1
         self.k = k
         laenge_0 = F*dt
+
         f,m = np.divmod(laenge_0, self.laenge_Bin)
+     
         f = int(f)
         m = m/self.laenge_Bin
         self.f = f
@@ -310,6 +314,29 @@ class PI_Regler:
             
         return stellwert    
 
+    def adaptParameters(self,F, t_filter,T_tank,T_kuehl):
+        # soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
+        P_max = 100000
+        coel = 2000
+        poel = 1000     
+        max_gain = -P_max/(F*coel*poel)
+        max_gain = T_kuehl-T_tank
+
+        self.Kp = 1/max_gain/self.dt/t_filter*2*np.pi/20
+        self.Ki = t_filter * self.Kp
+        #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp, "     max gain: ",max_gain)
+
+import numpy as np
+
+class LookupTable:
+    def __init__(self):
+        self.keys = np.linspace(0, 1, 11)
+        self.values = np.array([0	,0.400799732573815	,0.619636162348070	,0.744447185364894,	0.811554345050153,	0.859176897591362,	0.900500448644506	,0.938703450255423,	0.974730918438370,	1.00620288454483,	1.03073937992630])
+    
+    def map_value(self, value):
+        mapped_value = np.interp(value, self.keys, self.values)
+        return mapped_value
+
 class testklasse:
     # Beschreibung F nach r
     def update(F,r):
@@ -327,57 +354,6 @@ class testklasse:
 if __name__ == "__main__":
     
     
-    
+    l = LookupTable()
+    print(l.map_value(14))
 
-
-    dt = 0.1
-    startwert = 70
-    F = 0.001
-
-    fil = sensorfilter(dt=dt, Zeitkonstante=10)
-    inp = 1
-    for m in range(int(10/dt)):
-        inp = fil.update(1)
-        print("value: ", inp)
-
-
-
-
-    wt = wärmetauscher(dt=dt, startwert= startwert)
-   
-    tot1 = Transportdelay(n_Bins=1000,volumen=0.001486098988854,startwert=startwert)
-    tot2 = Transportdelay(n_Bins=1000,volumen=0.005972953032638,startwert=startwert)
-    tot3 = Transportdelay(n_Bins=1000,volumen=0.003664353671147,startwert=startwert)
-    tot4 = Transportdelay(n_Bins=1000,volumen=0.020497478347979,startwert=startwert)
-
-    rohr1 = rohrstück_1(dt=dt,startwert=startwert)
-    rohr2 = rohrstück_2(dt=dt,startwert=startwert)
-
-    misch = mischventil(startwert=startwert)    
-
-    T_tank = np.array([100])
-  
-    start = time.time()
-
-    for i in range(10):
-        if i>1000:
-            r = 0.8
-        else: 
-            r  = 0.2
-
-        [F1, F2 ,F3] = F_nach_r.update(F=F, r = r)
-
-        T_BP1 = rohr1.update(F=F2, input=T_tank)
-        T_BP2 = tot1.update(F=F2,input=T_BP1,dt=dt)
-
-        T_WT1 = wt.update(F=F3,T_tank=T_tank,T_kuehl=np.array([20]))
-        T_WT2 = tot2.update(F=F3, input=T_WT1,dt=dt)
-
-        T_M =   misch.update(F1=F1,F2 = F2,F3 = F3,T_BP2=T_BP2,T_WT2=T_WT2)
-        
-        T_D40 = tot3.update(F=F, input=T_M,dt=dt)
-        T_T_1 = rohr2.update(F=F, input= T_D40)
-        T_T_2 = tot4.update(F=F, input=T_T_1, dt=dt)
-        
-    end = time.time()
-    print("Zeit: {:0>5.1f} Sekunden\tT_BP1: {:0>3.3f}\tT_BP2: {:0>3.3f}\tT_WT1: {:0>3.3f}\tT_WT2: {:0>3.3f}\tT_M: {:0>3.3f}\tT_D40: {:0>3.3f}\tT_T_1: {:0>3.3f}\tT_T_2: {:0>3.3f}\tBenötigte Zeit: {:0>4.1f} ms".format(i*dt, T_BP1[0], T_BP2[0], T_WT1[0], T_WT2[0], T_M[0], T_D40[0], T_T_1[0], T_T_2[0], (end-start)*1000))

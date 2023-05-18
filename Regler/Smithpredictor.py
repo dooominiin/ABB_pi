@@ -6,6 +6,7 @@ from Regler.modelle import F_nach_r
 from Regler.modelle import mischventil
 from Regler.modelle import PI_Regler
 from Regler.modelle import sensorfilter
+from Regler.modelle import LookupTable
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -38,7 +39,7 @@ class Smithpredictor:
 
         self.misch = mischventil(startwert=startwert)    
 
-
+        self.lookup = LookupTable()
 
 
 
@@ -47,7 +48,7 @@ class Smithpredictor:
 
 
         self.filter_V_tilde = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
-        self.filter_V = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
+        self.filter_V = sensorfilter(dt = dt, Zeitkonstante=30,startwert = startwert)
         self.filter_T_tilde = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
         self.filter_T = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
 
@@ -62,8 +63,8 @@ class Smithpredictor:
         self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
         self.V_K_regler = PI_Regler(Kp = -0.125, Ki = -0.075, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
         
-        self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=-1,antiwindup_upper=1, name = "V_F")
-        self.V_F_regler = PI_Regler(Kp = 0.000, Ki = 0.0000, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_F")
+        self.V_F_regler = PI_Regler(Kp = 0.00000005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=-1,antiwindup_upper=1, name = "V_F")
+        #self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_F")
 
 
 
@@ -127,6 +128,7 @@ class Smithpredictor:
         T_kuehl = np.array([23])
 
         ##########  regelstrecke (löschen für implementierung auf Teststand) ##############################################
+
         [F1, F2, F3] = F_nach_r.update(F=F, r=self.r)
         T1 = self.rohr1_anlage.update(F=F2, input= T_tank)
         T2 = self.tot1_anlage.update(F=F2, input=T1, dt=self.dt)
@@ -138,11 +140,14 @@ class Smithpredictor:
         T_D40 = self.filter_V.update(input=T_D40)
 
         T5 = self.tot3_anlage.update(F=F1,input=T_D40, dt=self.dt)
-        T6 = self.rohr2_anlage.update(F=F1, input=T5)
+        T6 =2+ self.rohr2_anlage.update(F=F1, input=T5)
         TOELE  = self.tot4_anlage.update(F=F1, input=T6, dt=self.dt)
         TOELE = self.filter_T.update(input=TOELE)
 
         
+
+
+
         ##########  T~  ######################################################
         T_T_1 = self.rohr2.update(F=self.F1, input=T_D40)
         T_T_1 = self.filter_T_tilde.update(input = T_T_1)
@@ -156,7 +161,9 @@ class Smithpredictor:
         k = self.K_regler.update(fehler =s_k2)
         s_V = k + s_k
         s_V_K = s_V - self.T_V_tilde
+        self.V_K_regler.adaptParameters(F=F, t_filter= self.filter_V_tilde.get_t_filter(),T_tank= T_tank, T_kuehl=T_kuehl)
         r_tilde = self.V_K_regler.update(fehler= s_V_K)
+        
         ##########  V~  ######################################################
         [self.F1, self.F2, self.F3] = F_nach_r.update(F=F, r=r_tilde)
         T_BP1 = self.rohr1.update(F=self.F2, input=T_tank)
@@ -168,11 +175,12 @@ class Smithpredictor:
         ##########  totzeit V~  ##############################################
         T_V = self.tot3.update(F=self.F1, input=self.T_V_tilde, dt=self.dt)
         T_V2 = T_D40 - T_V 
-
-        m = self.V_F_regler.update(fehler= T_V2)
+        self.V_F_regler.adaptParameters(F=F, t_filter= self.filter_V.get_t_filter()*3,T_tank= T_tank, T_kuehl=T_kuehl)
+        m = self.V_F_regler.update(fehler= -T_V2)
         self.r = m + r_tilde
+        
         ##########  ende smithpredictor  ##############################################
-
+        print("r: ",self.r)
         
 
         if False:
@@ -184,7 +192,7 @@ class Smithpredictor:
 
 
         ############ log ################
-        string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}".format(float(s),float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde))
+        string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.4f}, {:.2f}, {:.2f}".format(float(s),float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde))
         with open("log.txt", "a") as file:
             file.write(string + "\n")
 
