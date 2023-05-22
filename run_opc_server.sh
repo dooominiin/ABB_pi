@@ -13,5 +13,5 @@ do
     fi
 
     # Warten für eine gewisse Zeit, bevor das Skript erneut gestartet wird
-    sleep 1
+    sleep 10
 done
