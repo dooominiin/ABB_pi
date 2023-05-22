@@ -12,7 +12,7 @@ class Regler:
         self.input = {
             "T_D40": 60,
             "T_tank": 60,
-            "T_t": 60,
+            "T_kuehl": 60,
             "F": 0.001,
             "s": 0,
             "r": 0.5
@@ -26,24 +26,52 @@ class Regler:
         self.client = client
     
     def set_input(self, input, node):
+        # hier die korrekten strings für die variabeln eingeben
+        
+        # testvariabeln:
         if node == self.client.client.get_node("ns=2;i=9"):
             self.input["T_D40"] = input
-            #print(f"Variable T_D40 aktualisiert mit dem Wert: {input}")
+            print(f"Variable T_D40 aktualisiert mit dem Wert: {input}")
         elif node == self.client.client.get_node("ns=2;i=10"):
             self.input["T_tank"] = input
-            #print(f"Variable T_tank aktualisiert mit dem Wert: {input}")
+            print(f"Variable T_tank aktualisiert mit dem Wert: {input}")
         elif node == self.client.client.get_node("ns=2;i=11"):
-            self.input["T_t"] = input
-            #print(f"Variable T_t aktualisiert mit dem Wert: {input}")
+            self.input["T_kuehl"] = input
+            print(f"Variable T_kuehl aktualisiert mit dem Wert: {input}")
         elif node == self.client.client.get_node("ns=2;i=12"):
             self.input["F"] = input
-            #print(f"Variable F aktualisiert mit dem Wert: {input}")
+            print(f"Variable F aktualisiert mit dem Wert: {input}")
         elif node == self.client.client.get_node("ns=2;i=13"):
             self.input["s"] = input
-            #print(f"Variable s aktualisiert mit dem Wert: {input}")
+            print(f"Variable s aktualisiert mit dem Wert: {input}")
         elif node == self.client.client.get_node("ns=2;i=14"):
             self.input["r"] = input
-            #print(f"Variable r aktualisiert mit dem Wert: {input}")
+            print(f"Variable r aktualisiert mit dem Wert: {input}")
+        
+        # Leitsystemvariabeln:
+        if node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D40:IO.In.Value"):
+            self.input["T_D40"] = input
+            print(f"Variable T_D40 aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D50:IO.In.Value"):
+            self.input["T_tank"] = input
+            print(f"Variable T_tank aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=11"):
+            self.input["T_kuehl"] = input
+            print(f"Variable T_kuehl aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D44:SO.Out"):
+            self.input["F"] = input
+            print(f"Variable F aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=2;i=13"):
+            self.input["s"] = input
+            print(f"Variable s aktualisiert mit dem Wert: {input}")
+        elif node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D5:IO.Out.Value"):
+            self.input["r"] = input
+            print(f"Variable r aktualisiert mit dem Wert: {input}")
+        
+
+
+
+
 
        
     def loop_start(self):

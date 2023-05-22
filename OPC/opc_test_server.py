@@ -23,7 +23,7 @@ class VarUpdater(Thread):
     def run(self):
         while not self._stopev:
             for var in self.vars:
-                v = 100*sin(time.time() / 100)
+                v = 70 + sin(time.time() * 5)*20
                 var.set_value(v)
                 print("Variabel aktualisiert mit: ",var)
             time.sleep(5)
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     device_type.add_variable(
         idx, "T_tank", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
     device_type.add_variable(
-        idx, "T_t", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
+        idx, "T_kuehl", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
     device_type.add_variable(
         idx, "F", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
     device_type.add_variable(
@@ -71,12 +71,12 @@ if __name__ == "__main__":
 
     # start variable updater thread
     vars = [
-        device.get_child(["{}:T_D40".format(idx)]),
-        device.get_child(["{}:T_tank".format(idx)]),
-        device.get_child(["{}:T_t".format(idx)]),
-        device.get_child(["{}:F".format(idx)]),
+        #device.get_child(["{}:T_D40".format(idx)]),
+        #device.get_child(["{}:T_tank".format(idx)]),
+        #device.get_child(["{}:T_kuehl".format(idx)]),
+        #device.get_child(["{}:F".format(idx)]),
         device.get_child(["{}:s".format(idx)]),
-        device.get_child(["{}:r".format(idx)])
+        #device.get_child(["{}:r".format(idx)])
     ]
     var_updater = VarUpdater(vars)
     var_updater.start()

@@ -314,26 +314,28 @@ class PI_Regler:
             
         return stellwert    
 
-    def adaptParameters(self,F, t_filter,T_tank,T_kuehl):
-        # soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
-        P_max = 100000
-        coel = 2000
-        poel = 1000     
-        max_gain = -P_max/(F*coel*poel)
+    def adaptParameters_V_F(self,F, t_filter,T_tank,T_kuehl):
+        # für V_K und V_F, soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
         max_gain = T_kuehl-T_tank
-
+        
         self.Kp = 1/max_gain/self.dt/t_filter*2*np.pi/20
         self.Ki = t_filter * self.Kp
         #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp, "     max gain: ",max_gain)
 
-    def adaptParameters_K(self,F):
-        # soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
+    def adaptParameters_V_K(self,F, t_filter,T_tank,T_kuehl):
+        # für V_K und V_F, soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
+        max_gain = T_kuehl-T_tank
+        
+        self.Kp = 1/max_gain/self.dt/t_filter*2*np.pi/100
+        self.Ki = t_filter * self.Kp
+        #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp, "     max gain: ",max_gain)
 
+    def adaptParameters_K(self,F):
+        # für K, soll für die dynamische anpassung an das Wärmetauschermodell genutzt werden und past die parameter des reglers an den maximal möglichen gain des systems an. Der Wärmetauscher hat maximal etwa 100kW kühlleistung.
         self.Kp = 0.6 
         self.Ki = self.Kp * 0.06 / 0.001 *F
         #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp)
 
-import numpy as np
 
 class LookupTable:
     def __init__(self):
@@ -343,6 +345,21 @@ class LookupTable:
     def map_value(self, value):
         mapped_value = np.interp(value, self.keys, self.values)
         return mapped_value
+
+class Mittelwertfilter:
+    def __init__(self, startwert, Zeitkonstante, dt):
+        self.n = int(Zeitkonstante/dt)
+        self.values = [startwert] * self.n
+        self.index = 0
+        self.summe = startwert * self.n
+
+    def update(self, wert):
+        self.summe -= self.values[self.index]
+        self.values[self.index] = wert
+        self.summe += wert
+        self.index = (self.index + 1) % self.n
+        mittelwert = self.summe / self.n
+        return mittelwert
 
 class testklasse:
     # Beschreibung F nach r

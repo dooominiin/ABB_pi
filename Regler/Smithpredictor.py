@@ -7,6 +7,7 @@ from Regler.modelle import mischventil
 from Regler.modelle import PI_Regler
 from Regler.modelle import sensorfilter
 from Regler.modelle import LookupTable
+from Regler.modelle import Mittelwertfilter
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -52,21 +53,19 @@ class Smithpredictor:
         self.filter_T_tilde = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
         self.filter_T = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
 
+        self.filter_s_V = sensorfilter(dt = dt, Zeitkonstante=10,startwert = startwert)
+        
 
+        
+        
+        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
+        
+        self.V_F_regler = PI_Regler(Kp = 0.00000005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=-1,antiwindup_upper=1, name = "V_F")
+
+        self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06/0.6, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
 
         self.F_regler = PI_Regler(Kp = -1, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
         #self.F_regler = PI_Regler(Kp = 0, Ki = 0 , dt = self.dt, minimalwert=-60, maximalwert=60,antiwindup_lower=-99,antiwindup_upper=99, name = "F")
-        
-        self.K_regler = PI_Regler(Kp = 0.6, Ki = 0.06/0.6, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
-        #self.K_regler = PI_Regler(Kp = 0, Ki = 0, dt = self.dt, minimalwert=-200, maximalwert=200,antiwindup_lower=-99,antiwindup_upper=99, name = "K")
-        
-        self.V_K_regler = PI_Regler(Kp = -0.25, Ki = -0.15, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
-        self.V_K_regler = PI_Regler(Kp = -0.125, Ki = -0.075, dt = self.dt, minimalwert=0, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_K")
-        
-        self.V_F_regler = PI_Regler(Kp = 0.00000005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=-1,antiwindup_upper=1, name = "V_F")
-        #self.V_F_regler = PI_Regler(Kp = 0.0005, Ki = 0.00005, dt = self.dt, minimalwert=-1, maximalwert=1,antiwindup_lower=0,antiwindup_upper=1, name = "V_F")
-
-
 
 
 
@@ -99,12 +98,12 @@ class Smithpredictor:
         
         ############ log init ################
         names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde"
-        with open("log.txt", "w") as file:
+        with open("Monitor/log.txt", "w") as file:
             file.write(names + "\n")
 
     def update(self, input):
         self.zähler += self.dt
-        F  = 0.002
+        F  = 0.001
         s = 90
         if self.zähler>500:
             s = 85
@@ -121,6 +120,7 @@ class Smithpredictor:
         if self.zähler>3500:
             s = 85
 
+        s = input['s']
 
         #T_D40 = np.array([70])
         T_tank = np.array([90])
@@ -137,7 +137,7 @@ class Smithpredictor:
         T4 = self.tot2_anlage.update(F=F3, input=T3, dt=self.dt)
 
         T_D40 = self.misch_anlage.update(F1=F1,F2=F2,F3=F3,T_BP2=T2,T_WT2=T4)
-        T_D40 = self.filter_V.update(input=T_D40)
+        T_D40 = 1+self.filter_V.update(input=T_D40)
 
         T5 = self.tot3_anlage.update(F=F1,input=T_D40, dt=self.dt)
         T6 =2+ self.rohr2_anlage.update(F=F1, input=T5)
@@ -161,8 +161,11 @@ class Smithpredictor:
         self.K_regler.adaptParameters_K(F=F)
         k = self.K_regler.update(fehler =s_k2)
         s_V = k + s_k
+        s_V = self.filter_s_V.update(s_V)
+
+        
         s_V_K = s_V - self.T_V_tilde
-        self.V_K_regler.adaptParameters(F=F, t_filter= self.filter_V_tilde.get_t_filter(),T_tank= T_tank, T_kuehl=T_kuehl)
+        self.V_K_regler.adaptParameters_V_K(F=F, t_filter= self.filter_V_tilde.get_t_filter(),T_tank= T_tank, T_kuehl=T_kuehl)
         r_tilde = self.V_K_regler.update(fehler= s_V_K)
         
         ##########  V~  ######################################################
@@ -172,11 +175,11 @@ class Smithpredictor:
         T_WT1 = self.wt.update(F=self.F3, T_tank=T_tank, T_kuehl=T_kuehl)
         T_WT2 = self.tot2.update(F=self.F3, input=T_WT1, dt=self.dt)
         self.T_V_tilde = self.misch.update(F1=self.F1, F2=self.F2, F3=self.F3, T_BP2=T_BP2, T_WT2=T_WT2)
-        self.T_V_tilde = 1+self.filter_V_tilde.update(input = self.T_V_tilde)
+        self.T_V_tilde = self.filter_V_tilde.update(input = self.T_V_tilde)
         ##########  totzeit V~  ##############################################
         T_V = self.tot3.update(F=self.F1, input=self.T_V_tilde, dt=self.dt)
         T_V2 = T_D40 - T_V 
-        self.V_F_regler.adaptParameters(F=F, t_filter= self.filter_V.get_t_filter()*3,T_tank= T_tank, T_kuehl=T_kuehl)
+        self.V_F_regler.adaptParameters_V_F(F=F, t_filter= self.filter_V.get_t_filter(),T_tank= T_tank, T_kuehl=T_kuehl)
         self.V_F_regler.set_limits(minimalwert=-r_tilde, maximalwert=1-r_tilde, antiwindup_lower=-r_tilde, antiwindup_upper=1-r_tilde)
         m = self.V_F_regler.update(fehler= -T_V2)
         self.r = m + r_tilde
@@ -194,7 +197,7 @@ class Smithpredictor:
 
         ############ log ################
         string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.4f}, {:.2f}, {:.2f}".format(float(s),float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde))
-        with open("log.txt", "a") as file:
+        with open("Monitor/log.txt", "a") as file:
             file.write(string + "\n")
 
         return self.r

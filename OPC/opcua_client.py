@@ -14,7 +14,7 @@ class SubHandler(object):
         self.regler = regler
 
     def datachange_notification(self, node, val, data):
-        print("Python: New data change event", node, val)
+        #print("Python: New data change event", node, val)
     
         self.regler.set_input(val,node) # neue daten zum regler schicken
 
@@ -37,21 +37,22 @@ class OpcUaClient:
         try:
             self.client.connect()
             root = self.client.get_root_node()
-            
+        except:
+            print("Verbindung zum OPC Server nicht möglich!")
+
+        try:            
             # subscribing to a variable node
             self.handler = SubHandler()
             self.handler.get_regler(self.regler)
             self.subscription = self.client.create_subscription(500, self.handler) 
             
             # meine variabeln
-            variable_names = ["T_D40", "T_tank", "T_t", "F", "s", "r"]
+            variable_names = ["T_D40", "T_tank", "T_kuehl", "F", "s", "r"]
             for var_name in variable_names:
                 myvar = root.get_child(["0:Objects", "2:Temperaturen",f"2:{var_name}"])
                 self.handle = self.subscription.subscribe_data_change(myvar)
-
-           
         except:
-            print("Verbindung zum OPC Server nicht möglich!")
+            print("subscribe der Variabeln nicht möglich!")
 
     
     def set_output(self,output):
