@@ -26,6 +26,12 @@ class SubHandler(object):
 class OpcUaClient:
     def __init__(self, dt, regler):
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
+        self.client = Client("opc.tcp://192.168.43.1:4840/freeopcua/server/")
+        try:
+            self.client.connect()
+            root = self.client.get_root_node()
+        except:
+            print("Verbindung zum OPC Server nicht möglich!")
         self.terminate = False
         self.thread = Thread(target=self.loop_forever)
         self.output = 0
@@ -34,11 +40,6 @@ class OpcUaClient:
         
         self.regler = regler
         self.regler.set_opc_client(self)
-        try:
-            self.client.connect()
-            root = self.client.get_root_node()
-        except:
-            print("Verbindung zum OPC Server nicht möglich!")
 
         try:            
             # subscribing to a variable node
