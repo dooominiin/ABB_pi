@@ -2,16 +2,63 @@
   {
     "name": "T_D40",
     "namespace": "ns=5",
-    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D40:IO.In.Value"
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D40:IO.In.Value",
+    "writable": false,
+    "type": "Float"
   },
   {
     "name": "T_tank",
     "namespace": "ns=5",
-    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_tank:IO.In.Value"
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D50:IO.In.Value",
+    "writable": false,
+    "type": "Float"
   },
   {
     "name": "T_kuehl",
     "namespace": "ns=5",
-    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_kuehl:IO.In.Value"
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_kuehl:IO.In.Value",
+    "writable": false,
+    "type": "Float"
+  },
+  {
+    "name": "r_ist",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D5:IO.Out.Value",
+    "writable": false,
+    "type": "Float"
+  },
+  {
+    "name": "F",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D44:SO.Out",
+    "writable": false,
+    "type": "Float"
+  },
+  {
+    "name": "r_soll",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_soll:IO.Out.Value",
+    "writable": true,
+    "type": "Float"
+  },
+  {
+    "name": "TOELE",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//TOELE",
+    "writable": false,
+    "type": "Float"
+  },{
+    "name": "s",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//s",
+    "writable": false,
+    "type": "Float"
+  },
+  {
+    "name": "state",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//state",
+    "writable": false,
+    "type": "Int32"
   }
 ]

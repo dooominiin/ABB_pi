@@ -63,39 +63,19 @@ if __name__ == "__main__":
             name = var_info["name"]
             namespace = var_info["namespace"]
             string = var_info["string"]
-            
-
-            node_id = ua.NodeId.from_string(namespace)
-            var = device.add_variable(idx, name, ua.Variant(0, ua.VariantType.Float), nodeid=node_id)
+            type = var_info["type"]
+            node_id = ua.NodeId.from_string(f"{namespace};{string}")
+            if type == "Float":
+                var = device.add_variable(node_id, name, ua.Variant(0, ua.VariantType.Float))
+            if type == "Int32":
+                var = device.add_variable(node_id, name, ua.Variant(0, ua.VariantType.Int32))
             var.set_modelling_rule(True)
             var.set_value(0)
+            var.set_writable(writable=var_info["writable"])
 
-            print("Variable erstellt:", name, namespace, string)
-
-
-
-
-    # add variable to device type
-    device_type.add_variable(
-        idx, "T_D40", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
-    device_type.add_variable(
-        idx, "T_tank", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
-    device_type.add_variable(
-        idx, "T_kuehl", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
-    device_type.add_variable(
-        idx, "F", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
-    device_type.add_variable(
-        idx, "s", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
-    device_type.add_variable(
-        idx, "r", ua.Variant(0, ua.VariantType.Float)).set_modelling_rule(True)
-
-
-    # create an instance of our device type in the address space
-    device = server.nodes.objects.add_object(
-        idx, "Temperaturen", objecttype=device_type)
-
+    
     # node für den client writable machen
-    device.get_child(["{}:r".format(idx)]).set_writable(writable=True)
+    #device.get_child(["{}:r".format(idx)]).set_writable(writable=True)
 
     # start variable updater thread
     vars = [
@@ -103,7 +83,7 @@ if __name__ == "__main__":
         #device.get_child(["{}:T_tank".format(idx)]),
         #device.get_child(["{}:T_kuehl".format(idx)]),
         #device.get_child(["{}:F".format(idx)]),
-        device.get_child(["{}:s".format(idx)]),
+        #device.get_child(["{}:s".format(idx)]),
         #device.get_child(["{}:r".format(idx)])
     ]
     var_updater = VarUpdater(vars)
