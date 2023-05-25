@@ -57,7 +57,7 @@ if __name__ == "__main__":
     #device.get_child(["{}:r".format(idx)]).set_writable(writable=True)
 
     # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
-    with open("OPC/variablen.json", "r") as file:
+    with open("OPC/variablen.json", "r", encoding='utf-8') as file:
         variables = json.load(file)
         for var_info in variables:
             name = var_info["name"]
@@ -65,10 +65,12 @@ if __name__ == "__main__":
             string = var_info["string"]
             type = var_info["type"]
             node_id = ua.NodeId.from_string(f"{namespace};{string}")
+            print(node_id)
             if type == "Float":
                 var = device.add_variable(node_id, name, ua.Variant(0, ua.VariantType.Float))
             if type == "Int32":
                 var = device.add_variable(node_id, name, ua.Variant(0, ua.VariantType.Int32))
+            print(var)
             var.set_modelling_rule(True)
             var.set_value(0)
             var.set_writable(writable=var_info["writable"])
