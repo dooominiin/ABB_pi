@@ -6,6 +6,7 @@ from datetime import datetime
 import time
 from math import sin
 import sys
+import json
 
 from opcua.ua import NodeId, NodeIdType
 from opcua import ua, uamethod, Server
@@ -46,6 +47,33 @@ if __name__ == "__main__":
     # create a new node type we can instantiate in our address space
     device_type = server.nodes.base_object_type.add_object_type(
         idx, "Sensorwerte")
+
+
+    # create an instance of our device type in the address space
+    device = server.nodes.objects.add_object(
+        idx, "Temperaturen", objecttype=device_type)
+
+    # node für den client writable machen
+    #device.get_child(["{}:r".format(idx)]).set_writable(writable=True)
+
+    # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
+    with open("OPC/variablen.json", "r") as file:
+        variables = json.load(file)
+        for var_info in variables:
+            name = var_info["name"]
+            namespace = var_info["namespace"]
+            string = var_info["string"]
+            
+
+            node_id = ua.NodeId.from_string(namespace)
+            var = device.add_variable(idx, name, ua.Variant(0, ua.VariantType.Float), nodeid=node_id)
+            var.set_modelling_rule(True)
+            var.set_value(0)
+
+            print("Variable erstellt:", name, namespace, string)
+
+
+
 
     # add variable to device type
     device_type.add_variable(

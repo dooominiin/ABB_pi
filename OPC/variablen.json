@@ -1,0 +1,17 @@
+[
+  {
+    "name": "T_D40",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D40:IO.In.Value"
+  },
+  {
+    "name": "T_tank",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_tank:IO.In.Value"
+  },
+  {
+    "name": "T_kuehl",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_kuehl:IO.In.Value"
+  }
+]
