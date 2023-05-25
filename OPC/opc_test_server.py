@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
         except KeyboardInterrupt:
             pass
-
+  
         finally:
             # stop variable updater thread
             var_updater.stop()
