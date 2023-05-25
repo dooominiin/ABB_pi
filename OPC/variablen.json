@@ -13,7 +13,7 @@
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D50:IO.In.Value",
     "writable": false,
     "type": "Float",
-    "subscribe": true
+    "subscribe": false
   },
   {
     "name": "T_kuehl",
@@ -50,10 +50,10 @@
   {
     "name": "TOELE",
     "namespace": "ns=5",
-    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//TOELE",
+    "string": "s=Root//Control Network//TLP//Applications//Moench//Control Modules//Moench//Schmieroelsystem//TOELE",
     "writable": false,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "s",
