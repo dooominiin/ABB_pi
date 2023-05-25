@@ -31,7 +31,7 @@ class OpcUaClient:
         self.terminate = False
         try:
             self.client.connect()
-            root = self.client.get_root_node()
+            print("Verbindung zum OPC Server erfolgreich")
         except:
             print("Verbindung zum OPC Server nicht möglich!")
             self.terminate = False
@@ -51,18 +51,17 @@ class OpcUaClient:
             self.subscription = self.client.create_subscription(500, self.handler) 
             
             # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
-            with open("OPC/variablen.json", "r") as file:
+            with open("OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
                 for var_info in variables:
                     name = var_info["name"]
                     namespace = var_info["namespace"]
                     string = var_info["string"]
-
                     if var_info["subscribe"]:
                         node=self.client.get_node(nodeid=f"{namespace};{string}")
-                        print(node)
-                        #myvar = root.get_child(f"{namespace};{string}")
-                        #self.handle = self.subscription.subscribe_data_change(node_id)
+                        self.handle = self.subscription.subscribe_data_change(node)
+                        print("subscribed to: ",name)
+
         except Exception as e:
             print("subscribe der Variabeln nicht möglich!")
             print(e)

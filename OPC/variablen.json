@@ -5,7 +5,7 @@
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D40:IO.In.Value",
     "writable": false,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "T_tank",
