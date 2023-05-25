@@ -37,7 +37,7 @@ if __name__ == "__main__":
     server.set_server_name("Mein OPC Testserver")
 
     # set endpoint
-    server.set_endpoint("opc.tcp://localhost:4840/freeopcua/server/")
+    server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
 
     # setup our own namespace
     uri = "Mein_OPCUA_Testserver"
