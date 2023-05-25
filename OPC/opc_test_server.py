@@ -82,20 +82,27 @@ if __name__ == "__main__":
     var_updater.start()
 
     # start server
-    server.start()
-
-    # run server until stopped by user
     try:
-        print("Press Ctrl-C to stop.")
-        while True:
-            time.sleep(0.1)
+        server.start()
+    
+        try:
+            print("Press Ctrl-C to stop.")
+            while True:
+                time.sleep(0.1)
 
-    except KeyboardInterrupt:
-        pass
+        except KeyboardInterrupt:
+            pass
 
-    finally:
+        finally:
+            # stop variable updater thread
+            var_updater.stop()
+
+            # stop server
+            server.stop()
+        
+    except:
         # stop variable updater thread
         var_updater.stop()
 
-        # stop server
-        server.stop()
+    # run server until stopped by user
+
