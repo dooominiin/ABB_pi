@@ -1,9 +1,8 @@
 from opcua import Client
 
 # Verbindung zum OPC-UA-Server herstellen
-url = "opc.tcp://192.168.43.1:4840/freeopcua/server/"
-url = "opc.tcp://192.168.43.203:4840/freeopcua/server/"
-#url = "opc.tcp://localhost:4840/freeopcua/server/"
+url = "opc.tcp://192.168.43.97:4840/freeopcua/server/" #lenovo hotspot
+#url = "opc.tcp://192.168.43.203:4840/freeopcua/server/" #raspi hotspot
 client = Client(url)
 
 # Verbindung herstellen und Verbindungsstatus überprüfen
