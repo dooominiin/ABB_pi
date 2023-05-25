@@ -13,7 +13,7 @@
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D50:IO.In.Value",
     "writable": false,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "T_kuehl",
@@ -21,7 +21,7 @@
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_kuehl:IO.In.Value",
     "writable": false,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "r_ist",
@@ -29,7 +29,7 @@
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D5:IO.Out.Value",
     "writable": false,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "F",
@@ -37,7 +37,7 @@
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D44:SO.Out",
     "writable": false,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "r_soll",
@@ -59,16 +59,16 @@
     "name": "s",
     "namespace": "ns=5",
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//s",
-    "writable": false,
+    "writable": true,
     "type": "Float",
-    "subscribe": false
+    "subscribe": true
   },
   {
     "name": "state",
     "namespace": "ns=5",
     "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//state",
-    "writable": false,
+    "writable": true,
     "type": "Int32",
-    "subscribe": false
+    "subscribe": true
   }
 ]

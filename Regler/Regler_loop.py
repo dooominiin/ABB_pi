@@ -3,22 +3,26 @@ from threading import Thread
 from Regler.Smithpredictor import Smithpredictor
 import numpy as np
 import os
+import json
+from enum import Enum
+
+
 
 class Regler:
     def __init__(self,dt):
         self.terminate = False
         self.thread = Thread(target=self.loop_forever)
 
-        self.input = {
-            "T_D40": 60,
-            "T_tank": 60,
-            "T_kuehl": 60,
-            "F": 0.001,
-            "s": 0,
-            "r": 0.5
-        }
+        # JSON laden und Namen auslesen
+        with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+            variables = json.load(file)
+            variable_names = [var_info["name"] for var_info in variables]
+        # Input-Liste initialisieren
+        self.input = {name: 60 if name.startswith("T") else 0 for name in variable_names}
+
         self.output = 0
         self.dt = dt # diskretisierungszeitschritt
+        self.dt_alt = dt
         self.client = None
         self.Smithpredictor = Smithpredictor(dt)
 
@@ -26,51 +30,15 @@ class Regler:
         self.client = client
     
     def set_input(self, input, node):
-        # hier die korrekten strings für die variabeln eingeben
-        
-        # testvariabeln:
-        if node == self.client.client.get_node("ns=2;i=9"):
-            self.input["T_D40"] = input
-            print(f"Variable T_D40 aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=10"):
-            self.input["T_tank"] = input
-            print(f"Variable T_tank aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=11"):
-            self.input["T_kuehl"] = input
-            print(f"Variable T_kuehl aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=12"):
-            self.input["F"] = input
-            print(f"Variable F aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=13"):
-            self.input["s"] = input
-            print(f"Variable s aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=14"):
-            self.input["r"] = input
-            print(f"Variable r aktualisiert mit dem Wert: {input}")
-        
-        # Leitsystemvariabeln:
-        if node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D40:IO.In.Value"):
-            self.input["T_D40"] = input
-            print(f"Variable T_D40 aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D50:IO.In.Value"):
-            self.input["T_tank"] = input
-            print(f"Variable T_tank aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=11"):
-            self.input["T_kuehl"] = input
-            print(f"Variable T_kuehl aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D44:SO.Out"):
-            self.input["F"] = input
-            print(f"Variable F aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=2;i=13"):
-            self.input["s"] = input
-            print(f"Variable s aktualisiert mit dem Wert: {input}")
-        elif node == self.client.client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_D5:IO.Out.Value"):
-            self.input["r"] = input
-            print(f"Variable r aktualisiert mit dem Wert: {input}")
-        
-
-
-
+        with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+            variables = json.load(file)
+            for var_info in variables:
+                name = var_info["name"]
+                namespace = var_info["namespace"]
+                string = var_info["string"]
+                if node == self.client.client.get_node(f"{namespace};{string}"):
+                    self.input[name] = input
+                    print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
 
 
        
@@ -79,17 +47,33 @@ class Regler:
 
     def loop_forever(self):
         while not self.terminate:
-            self.dt = 0   ### Achtung löschen für echtzeit !!!!!!
-            start_time = time.time()  # Startzeit speichern
-            ######################## Regler ########################
-            self.output = self.Smithpredictor.update(self.input)
-            ##################### Regler fertig ####################
-            elapsed_time = time.time() - start_time  # Zeit seit Start speichern
-            time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-            #print("benötigte zeit: ",elapsed_time)
+                start_time = time.time()  # Startzeit speichern
+                ######################## Regler ########################
+            if Zustand.beschleunigt == Zustand(input["state"]):
+                self.dt = 0   
+                self.output = self.Smithpredictor.update(self.input)
+            if Zustand.geregelter_Betrieb == Zustand(input["state"]):
+                self.dt = self.dt_alt
+                self.output = self.Smithpredictor.update(self.input)
+            if Zustand.manueller_Betrieb == Zustand(input["state"]):
+                self.dt = self.dt_alt
+                self.input["s"] = self.input["TOELE"]
+                self.output = self.Smithpredictor.update(self.input)
+                
+                
+                
+                ##################### Regler fertig ####################
+                elapsed_time = time.time() - start_time  # Zeit seit Start speichern
+                time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
+                #print("benötigte zeit: ",elapsed_time)
+
+
 
     def loop_stop(self):
         self.terminate = True
         self.thread.join()
 
-    
+    class Zustand(Enum):
+        manueller_Betrieb = 0
+        geregelter_Betrieb = 1
+        beschleunigt = 2

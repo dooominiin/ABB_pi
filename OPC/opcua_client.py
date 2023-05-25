@@ -16,7 +16,6 @@ class SubHandler(object):
 
     def datachange_notification(self, node, val, data):
         #print("Python: New data change event", node, val)
-    
         self.regler.set_input(val,node) # neue daten zum regler schicken
 
     def event_notification(self, event):
