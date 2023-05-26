@@ -38,7 +38,7 @@ class Regler:
                 string = var_info["string"]
                 if node == self.client.client.get_node(f"{namespace};{string}"):
                     self.input[name] = input
-                    print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
+                    #print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
 
 
        
@@ -46,34 +46,32 @@ class Regler:
         self.thread.start()
 
     def loop_forever(self):
+        
+        class Zustand(Enum):
+            manueller_Betrieb = 0
+            geregelter_Betrieb = 1
+            beschleunigt = 2
+
         while not self.terminate:
             start_time = time.time()  # Startzeit speichern
             ######################## Regler ########################
-            if Zustand.beschleunigt == Zustand(input["state"]):
+            if Zustand.beschleunigt == Zustand(self.input["state"]):
                 self.dt = 0   
                 self.output = self.Smithpredictor.update(self.input)
-            if Zustand.geregelter_Betrieb == Zustand(input["state"]):
+            if Zustand.geregelter_Betrieb == Zustand(self.input["state"]):
                 self.dt = self.dt_alt
                 self.output = self.Smithpredictor.update(self.input)
-            if Zustand.manueller_Betrieb == Zustand(input["state"]):
+            if Zustand.manueller_Betrieb == Zustand(self.input["state"]):
                 self.dt = self.dt_alt
                 self.input["s"] = self.input["TOELE"]
                 self.output = self.Smithpredictor.update(self.input)
-                
-                
-                
             ##################### Regler fertig ####################
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-            #print("benötigte zeit: ",elapsed_time)
+            print("benötigte zeit: ",elapsed_time)
 
 
 
     def loop_stop(self):
         self.terminate = True
         self.thread.join()
-
-    class Zustand(Enum):
-        manueller_Betrieb = 0
-        geregelter_Betrieb = 1
-        beschleunigt = 2
