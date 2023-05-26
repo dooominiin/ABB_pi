@@ -354,6 +354,7 @@ class Mittelwertfilter:
         self.summe = startwert * self.n
 
     def update(self, wert):
+        wert = float(wert)
         self.summe -= self.values[self.index]
         self.values[self.index] = wert
         self.summe += wert

@@ -30,8 +30,8 @@ class Smithpredictor:
         self.F3 = 0.0005
 
         ############ log init ################
-        names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde"
-        self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=36,Zeitschritt=1)
+        names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde, reglerguete_Misch , reglerguete_K, reglerguete_stellgrösse"
+        self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=3600,Zeitschritt=1)
 
         # JSON laden und Namen auslesen
         with open("OPC/variablen.json", "r", encoding='utf-8') as file:
@@ -54,7 +54,9 @@ class Smithpredictor:
 
         self.lookup = LookupTable()
 
-
+        self.reglergüte_Mischer = Mittelwertfilter(startwert=0,Zeitkonstante=1800, dt=dt)
+        self.reglergüte_K = Mittelwertfilter(startwert=0,Zeitkonstante=1800, dt=dt)
+        self.reglergüte_stellgrösse = Mittelwertfilter(startwert=0,Zeitkonstante=1800, dt=dt)
 
 
 
@@ -173,6 +175,7 @@ class Smithpredictor:
         self.V_F_regler.adaptParameters_V_F(F=self.F1, t_filter= self.filter_V.get_t_filter(),T_tank= T_tank, T_kuehl=T_kuehl)
         self.V_F_regler.set_limits(minimalwert=-r_tilde, maximalwert=1-r_tilde, antiwindup_lower=-r_tilde, antiwindup_upper=1-r_tilde)
         m = self.V_F_regler.update(fehler= -T_V2)
+        self.r_alt = self.r
         self.r = m + r_tilde
         
         ##########  ende smithpredictor  ##############################################
@@ -184,10 +187,12 @@ class Smithpredictor:
             print("Smithpredictor rechnet \ts: {:.2f}\t\tr: {:.2f}\t\t\tT_D40: {:.2f}\tTOELE: {:.2f}\tT_T_2: {:.2f}\tf: {:.2f}".format(
                 float(s), float(self.r), float(T_D40), float(self.TOELE), float(T_T_2),float(f)))
             print("Smithpredictor rechnet \ts_k2: {:.2f}\t\tk: {:.2f}".format(float(s_k2), float(k)))
-
-
+        ########### reglergüte ##########
+        güte_M = self.reglergüte_Mischer.update(abs(s_V-T_D40))
+        güte_K = self.reglergüte_K.update(abs(s-self.TOELE))
+        güte_r = self.reglergüte_stellgrösse.update(abs(self.r-self.r_alt))
         ############ log ################
-        string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.4f}, {:.2f}, {:.2f}".format(float(s), float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(self.TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde))
+        string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.4f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}".format(float(s), float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(self.TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde),float(güte_M), float(güte_K),float(güte_r))
         self.logger.update(text=string, dt=self.dt)
         
         ############ output #############
