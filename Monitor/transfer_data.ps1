@@ -1,8 +1,8 @@
-$source = "mister@192.168.43.203:/home/mister/Desktop/ABB_Projekt/log.txt"
+$source = "mister@192.168.43.203:/home/mister/Desktop/ABB_Projekt/Monitor/log.txt"
 $destination = "Monitor"
 
 while ($true) {
-    Start-Sleep -Seconds 5  # Warte 5 Sekunden
+    Start-Sleep -Seconds 1  # Warte 1 Sekunden
 
     try {
         $process = Start-Process -NoNewWindow -PassThru -Wait -FilePath "scp" -ArgumentList $source, $destination
