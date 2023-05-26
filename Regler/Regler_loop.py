@@ -47,8 +47,8 @@ class Regler:
 
     def loop_forever(self):
         while not self.terminate:
-                start_time = time.time()  # Startzeit speichern
-                ######################## Regler ########################
+            start_time = time.time()  # Startzeit speichern
+            ######################## Regler ########################
             if Zustand.beschleunigt == Zustand(input["state"]):
                 self.dt = 0   
                 self.output = self.Smithpredictor.update(self.input)
@@ -62,10 +62,10 @@ class Regler:
                 
                 
                 
-                ##################### Regler fertig ####################
-                elapsed_time = time.time() - start_time  # Zeit seit Start speichern
-                time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-                #print("benötigte zeit: ",elapsed_time)
+            ##################### Regler fertig ####################
+            elapsed_time = time.time() - start_time  # Zeit seit Start speichern
+            time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
+            #print("benötigte zeit: ",elapsed_time)
 
 
 
