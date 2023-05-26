@@ -76,9 +76,6 @@ if __name__ == "__main__":
             var.set_writable(writable=var_info["writable"])
 
     
-    # node für den client writable machen
-    #device.get_child(["{}:r".format(idx)]).set_writable(writable=True)
-
     # start variable updater thread
     vars = [
         #device.get_child(["{}:T_D40".format(idx)]),
