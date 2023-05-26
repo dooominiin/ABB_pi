@@ -20,7 +20,8 @@ class Regler:
         # Input-Liste initialisieren
         self.input = {name: 60 if name.startswith("T") else 0 for name in variable_names}
 
-        self.output = 0
+        self.output = self.input.copy()
+
         self.dt = dt # diskretisierungszeitschritt
         self.dt_alt = dt
         self.client = None
@@ -55,9 +56,6 @@ class Regler:
         while not self.terminate:
             start_time = time.time()  # Startzeit speichern
             ######################## Regler ########################
-            if Zustand.beschleunigt == Zustand(self.input["state"]):
-                self.dt = 0   
-                self.output = self.Smithpredictor.update(self.input)
             if Zustand.geregelter_Betrieb == Zustand(self.input["state"]):
                 self.dt = self.dt_alt
                 self.output = self.Smithpredictor.update(self.input)
@@ -65,10 +63,23 @@ class Regler:
                 self.dt = self.dt_alt
                 self.input["s"] = self.input["TOELE"]
                 self.output = self.Smithpredictor.update(self.input)
+            if Zustand.beschleunigt == Zustand(self.input["state"]):
+                self.dt = 0   
+                self.output = self.Smithpredictor.update(self.input)
             ##################### Regler fertig ####################
+            with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+                variables = json.load(file)
+                for var_info in variables:
+                    name = var_info["name"]
+                    namespace = var_info["namespace"]
+                    string = var_info["string"]
+                    if var_info["is_output"]:
+                        #print("update output",name,float(self.output[name]))
+                        self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-            print("benötigte zeit: ",elapsed_time)
+            print(Zustand(self.input["state"]),f"benötigte zeit: {elapsed_time*1000:3.2f} ms")
 
 
 
