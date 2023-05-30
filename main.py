@@ -1,6 +1,21 @@
+import sys
 from OPC.opcua_client import OpcUaClient
 from Regler.Regler_loop import Regler
 import time
+
+# Öffne eine Logdatei zum Schreiben
+log_datei = open('main.log', 'w')
+
+# Umlenken der Standardausgabe (stdout) auf die Logdatei
+sys.stdout = log_datei
+
+# Umlenken der Standardfehlerausgabe (stderr) auf die Logdatei
+sys.stderr = log_datei
+
+print("main.py gestartet")
+
+
+
 
 r = Regler(dt = 0.1)
 
@@ -18,3 +33,4 @@ except KeyboardInterrupt:
 finally:
     r.loop_stop()
     c.loop_stop()
+    log_datei.close()
