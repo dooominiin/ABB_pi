@@ -7,6 +7,7 @@ Created on Fri Feb 10 16:34:38 2023
 # link zur diskretisierung mit tustin: https://ch.mathworks.com/support/search.html/answers/578164-why-do-i-get-different-outputs-with-bilinear-and-c2d-sysc-ts-tustin-matlab-functions.html?fq%5B%5D=asset_type_name:answer&fq%5B%5D=category:signal/pulse-and-transition-metrics&page=1
 import numpy as np
 import time
+
 class sensorfilter:
     # mit Tustin(Trapez-methode) diskretisiert
     def __init__(self,dt, Zeitkonstante, startwert):
@@ -223,49 +224,6 @@ class F_nach_r:
         F3 = F1 * r
         F2 = F1 - F3
         return [F1, F2 ,F3]
-
-class PIDRegler:
-    # Achtung forward euler, nicht immer stabil
-    def __init__(self, Kp, Ki, Kd, dt, minimalwert, maximalwert):
-        self.Kp = Kp
-        self.Ki = Ki
-        self.Kd = Kd
-        self.dt = dt
-        self.minimalwert = minimalwert
-        self.maximalwert = maximalwert
-        self.letzter_fehler = 0
-        self.integral = 0
-
-    def set_limits(self, minimalwert, maximalwert):
-        self.minimalwert = minimalwert
-        self.maximalwert = maximalwert
-    
-    def update(self, fehler):
-        fehler = fehler
-        # Proportionaler Term
-        P = self.Kp * fehler
-
-        # Integraler Term
-        self.integral = self.integral + self.Ki * fehler * self.dt
-        self.integral = max(self.minimalwert, min(self.maximalwert , self.integral))
-        I = self.integral
-        #print("I: ",I, "fehler: ",fehler)
-        # Differentialer Term
-        differential = (fehler - self.letzter_fehler) / self.dt
-        D = self.Kd * differential
-
-        # Steuerwert berechnen
-        stellwert = P + I + D
-
-        # Letzten Fehler aktualisieren
-        self.letzter_fehler = fehler
-
-        if stellwert > self.maximalwert:
-            stellwert = self.maximalwert
-        elif stellwert < self.minimalwert:
-            stellwert = self.minimalwert
-            
-        return stellwert
 
 class PI_Regler:
  # mit Tustin(Trapez-methode) diskretisiert
