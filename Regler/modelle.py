@@ -336,7 +336,6 @@ class PI_Regler:
         self.Ki = self.Kp * 0.06 / 0.001 *F
         #print(self.name, "   ki: ",self.Ki,"   Kp: ", self.Kp)
 
-
 class LookupTable:
     def __init__(self):
         self.keys = np.linspace(0, 1, 11)

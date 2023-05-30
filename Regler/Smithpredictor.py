@@ -30,7 +30,7 @@ class Smithpredictor:
         self.F3 = 0.0005
 
         ############ log init ################
-        names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde, reglerguete_Misch , reglerguete_K, reglerguete_stellgrösse"
+        names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde, reglerguete_Misch , reglerguete_K, reglerguete_stellgroesse"
         self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=3600,Zeitschritt=1)
 
         # JSON laden und Namen auslesen

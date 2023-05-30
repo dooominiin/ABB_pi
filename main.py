@@ -10,8 +10,9 @@ c.loop_start()
 r.loop_start()
 
 try:
-    while True:
+    while c.is_running() or r.is_running():
         time.sleep(0.1)
+
 except KeyboardInterrupt:
     print("Keyboard interrupt received. Exiting...")
 finally:

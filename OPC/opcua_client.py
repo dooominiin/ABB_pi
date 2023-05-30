@@ -28,12 +28,20 @@ class OpcUaClient:
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
         #self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo hotspot
         self.terminate = False
-        try:
-            self.client.connect()
-            print("Verbindung zum OPC Server erfolgreich")
-        except:
-            print("Verbindung zum OPC Server nicht möglich!")
-            self.terminate = False
+        self.running = True
+        zähler = 0
+        while not self.terminate:
+            try:
+                self.client.connect()
+                print("Verbindung zum OPC Server erfolgreich")
+                break
+            except:
+                print(f"Verbindung zum OPC Server nicht möglich! {zähler+1}er Versuch!")
+                zähler += 1
+                if zähler >= 2:
+                    print(f"Abbruch nach {zähler} Versuchen!")
+                    self.terminate = True
+                    self.running = False
 
         self.thread = Thread(target=self.loop_forever)
         self.output = 0
@@ -42,36 +50,40 @@ class OpcUaClient:
         
         self.regler = regler
         self.regler.set_opc_client(self)
+        if self.terminate:
+            self.regler.loop_stop()
+            print("Regler gestoppt durch Client")
+        else:
+            try:            
+                # subscribing to a variable node
+                self.handler = SubHandler()
+                self.handler.get_regler(self.regler)
+                self.subscription = self.client.create_subscription(500, self.handler) 
+                
+                # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
+                with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+                    variables = json.load(file)
+                    for var_info in variables:
+                        name = var_info["name"]
+                        namespace = var_info["namespace"]
+                        string = var_info["string"]
+                        if var_info["subscribe"]:
+                            node=self.client.get_node(nodeid=f"{namespace};{string}")
+                            self.handle = self.subscription.subscribe_data_change(node)
+                            print("subscribed to: ",name)
 
-        try:            
-            # subscribing to a variable node
-            self.handler = SubHandler()
-            self.handler.get_regler(self.regler)
-            self.subscription = self.client.create_subscription(500, self.handler) 
-            
-            # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
-            with open("OPC/variablen.json", "r", encoding='utf-8') as file:
-                variables = json.load(file)
-                for var_info in variables:
-                    name = var_info["name"]
-                    namespace = var_info["namespace"]
-                    string = var_info["string"]
-                    if var_info["subscribe"]:
-                        node=self.client.get_node(nodeid=f"{namespace};{string}")
-                        self.handle = self.subscription.subscribe_data_change(node)
-                        print("subscribed to: ",name)
-
-        except Exception as e:
-            print("subscribe der Variabeln nicht möglich!")
-            print(e)
-            self.terminate = True
+            except Exception as e:
+                print("subscribe der Variabeln nicht möglich!")
+                print(e)
+                self.terminate = True
 
     
     def set_output(self,output):
         self.output = output
 
     def loop_start(self):
-        self.thread.start()
+        if not self.terminate:
+            self.thread.start()
 
     def loop_forever(self):
         while not self.terminate:                       
@@ -81,8 +93,15 @@ class OpcUaClient:
   
     def loop_stop(self):
         self.terminate = True
-        self.thread.join()
-        if hasattr(self.client, 'subscription'):
-            self.client.subscription.delete()
-        self.client.disconnect()
+        try:
+            self.thread.join()
+            if hasattr(self.client, 'subscription'):
+                self.client.subscription.delete()
+            self.client.disconnect()
+        except:
+            pass
+        self.running = False
+
+    def is_running(self):
+        return self.running
         

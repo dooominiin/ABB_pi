@@ -11,6 +11,7 @@ from enum import Enum
 class Regler:
     def __init__(self,dt):
         self.terminate = False
+        self.running = True
         self.thread = Thread(target=self.loop_forever)
 
         # JSON laden und Namen auslesen
@@ -44,7 +45,8 @@ class Regler:
 
        
     def loop_start(self):
-        self.thread.start()
+        if not self.terminate:
+            self.thread.start()
 
     def loop_forever(self):
         
@@ -85,4 +87,12 @@ class Regler:
 
     def loop_stop(self):
         self.terminate = True
-        self.thread.join()
+        try:
+            self.thread.join()
+        except:
+            pass
+        self.running = False
+
+    def is_running(self):
+        return self.running
+        
