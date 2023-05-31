@@ -4,7 +4,7 @@ from Regler.Regler_loop import Regler
 import time
 
 # Öffne eine Logdatei zum Schreiben
-log_datei = open('main.log', 'w')
+log_datei = open('/home/mister/Desktop/ABB_Projekt/main.log', 'w')
 
 # Umlenken der Standardausgabe (stdout) auf die Logdatei
 sys.stdout = log_datei

@@ -15,7 +15,7 @@ class Regler:
         self.thread = Thread(target=self.loop_forever)
 
         # JSON laden und Namen auslesen
-        with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+        with open("/home/mister/Desktop/ABB_Projekt/OPC/variablen.json", "r", encoding='utf-8') as file:
             variables = json.load(file)
             variable_names = [var_info["name"] for var_info in variables]
         # Input-Liste initialisieren
@@ -32,7 +32,7 @@ class Regler:
         self.client = client
     
     def set_input(self, input, node):
-        with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+        with open("/home/mister/Desktop/ABB_Projekt/OPC/variablen.json", "r", encoding='utf-8') as file:
             variables = json.load(file)
             for var_info in variables:
                 name = var_info["name"]
@@ -69,7 +69,7 @@ class Regler:
                 self.dt = 0   
                 self.output = self.Smithpredictor.update(self.input)
             ##################### Regler fertig ####################
-            with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+            with open("/home/mister/Desktop/ABB_Projekt/OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
                 for var_info in variables:
                     name = var_info["name"]
