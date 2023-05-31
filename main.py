@@ -2,6 +2,14 @@ import sys
 from OPC.opcua_client import OpcUaClient
 from Regler.Regler_loop import Regler
 import time
+import os
+
+
+# Ermittle den Pfad zum Verzeichnis des Skripts
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
+os.chdir(script_dir)
 
 # Öffne eine Logdatei zum Schreiben
 log_datei = open('/home/mister/Desktop/ABB_Projekt/main.log', 'w')
