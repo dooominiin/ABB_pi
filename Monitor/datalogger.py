@@ -30,6 +30,14 @@ class LogFile:
             self.zeilen_index += 1
         self.time_index += dt
         self.zähler += dt
+        # überzählige zeilen löschen
+        if self.zeilen_index == self.anzahl_zeilen-1:
+            with open(self.dateiname, 'r+') as datei:
+                inhalt = datei.readlines()
+                anzahl_zeilen = len(inhalt)
+                anzahl_behalten = min(self.anzahl_zeilen, anzahl_zeilen)
+                gekuerzter_inhalt = inhalt[:anzahl_behalten]
+                datei.writelines(gekuerzter_inhalt)
 
 if __name__ == "__main__":
     # Beispielaufruf
