@@ -7,7 +7,6 @@ import os
 
 # Ermittle den Pfad zum Verzeichnis des Skripts
 script_dir = os.path.dirname(os.path.abspath(__file__))
-
 # Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
 os.chdir(script_dir)
 
