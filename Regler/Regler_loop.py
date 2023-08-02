@@ -86,8 +86,8 @@ class Regler:
                         self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
             ######################Monitoring über OPC################
             if self.monitor.step(self.dt):
-                self.alle_states = self.Smithpredictor.getAllStates()
-                self.monitor.update(self.alle_states)
+                alle_states = self.Smithpredictor.getAllStates()
+                self.monitor.update(alle_states)
 
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten

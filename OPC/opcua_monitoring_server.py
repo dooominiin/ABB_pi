@@ -14,7 +14,7 @@ from opcua import ua, uamethod, Server
 update_intervall = 2; # Zeitintervall, in dem die variabeln im server upgedatet werden.
 
 
-class OpcUaServer_Monitoring    # create server object
+class OpcUaServer_Monitoring:    # create server object
     def __init(self,dt):
 
         self.terminate = False
@@ -98,7 +98,13 @@ class OpcUaServer_Monitoring    # create server object
             self.terminate = True
         
     def update(self,states):
-        
+        for var_info in self.variables:
+            name = var_info["name"]
+            namespace = var_info["namespace"]
+            string = var_info["string"]
+            #node_id = ua.NodeId.from_string(f"{namespace};{string}")
+            var = self.server.get_node(f"{namespace};{string}")
+            var.set_value(float(states[name]))
 
     def loop_start(self):
         if not self.terminate:

@@ -68643,4 +68643,8 @@ Zustand.beschleunigt benötigte zeit: 38.02 ms
 Zustand.beschleunigt benötigte zeit: 33.72 ms
 Zustand.beschleunigt benötigte zeit: 33.51 ms
 Zustand.beschleunigt benötigte zeit: 34.92 ms
-Zustand.beschleunigt
+Zustand.beschleunigtmain.py gestartet
+Verbindung zum OPC Server nicht m�glich! 1er Versuch!
+Verbindung zum OPC Server nicht m�glich! 2er Versuch!
+Abbruch nach 2 Versuchen!
+Regler gestoppt durch Client
