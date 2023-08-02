@@ -47,7 +47,8 @@ class OpcUaServer_Monitoring    # create server object
     # create a new node type we can instantiate in our address space
     device_type = server.nodes.base_object_type.add_object_type(
         idx, "Sensorwerte")
-
+  
+  
 
     # create an instance of our device type in the address space
     device = server.nodes.objects.add_object(
