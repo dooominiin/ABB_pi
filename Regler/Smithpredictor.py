@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 
 class Smithpredictor:
     def __init__(self, dt):
+        
         self.dt = dt
         startwert = 70
         self.zähler = 0
@@ -30,10 +31,48 @@ class Smithpredictor:
         self.F3 = 0.0005
 
         ############ log init ################
-        names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde, reglerguete_Misch , reglerguete_K, reglerguete_stellgroesse"
-        self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=3600,Zeitschritt=1)
-
-        # JSON laden und Namen auslesen
+        #names = "s,F1, F2, F3, T1, T2, T3, T4, T_D40, T5, T6, TOELE, T_T_1, T_T_2, f, s_k, s_k2, k, s_V, s_V_K, r_tilde, T_BP1, T_BP2, T_WT1, T_WT2, T_V, T_V2, m, r, T_V_tilde, reglerguete_Misch , reglerguete_K, reglerguete_stellgroesse"
+        #self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=3600,Zeitschritt=1)
+        
+        # Erstelle ein Dictionary mit vordefinierten Schlüsseln und initialisiere die Werte mit 0
+        self.states_monitoring = {
+            'F1': 0,
+            'F2': 0,
+            'F3': 0,
+            'T1': 0,
+            'T2': 0,
+            'T3': 0,
+            'T4': 0,
+            'T_D40': 0,
+            'T5': 0,
+            'T6': 0,
+            'TOELE': 0,
+            'T_T_1': 0,
+            'T_T_2': 0,
+            'f': 0,
+            's_k': 0,
+            's_k2': 0,
+            's_V': 0,
+            's_V_K': 0,
+            'r_tilde': 0,
+            'T_BP1': 0,
+            'T_BP2': 0,
+            'T_WT1': 0,
+            'T_WT2': 0,
+            'T_V_tilde': 0,
+            'T_V': 0,
+            'T_V2': 0,
+            'm': 0,
+            'r_alt': 0,
+            'r': 0,
+            'F_nach_r': 0,
+            'T_tank': 0,
+            'T_kuehl': 0,
+            # Füge hier weitere Schlüssel hinzu, falls benötigt
+        }
+        
+        
+        # JSON laden und Namen auslesen für den ABB OPC server
         with open("OPC/variablen.json", "r", encoding='utf-8') as file:
             variables = json.load(file)
             variable_names = [var_info["name"] for var_info in variables]
@@ -109,7 +148,9 @@ class Smithpredictor:
 
         self.misch_anlage = mischventil(startwert=startwert)
 
-        
+    def getAllStates(self):
+        return self.states_monitoring
+
 
     def update(self, input):
         self.zähler += self.dt
@@ -191,10 +232,49 @@ class Smithpredictor:
         güte_M = self.reglergüte_Mischer.update(abs(s_V-T_D40))
         güte_K = self.reglergüte_K.update(abs(s-self.TOELE))
         güte_r = self.reglergüte_stellgrösse.update(abs(self.r-self.r_alt))
-        ############ log ################
-        string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.4f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}".format(float(s), float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(self.TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde),float(güte_M), float(güte_K),float(güte_r))
-        self.logger.update(text=string, dt=self.dt)
         
+        ############ log ################
+        #string = "{:.2f},{:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.4f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}".format(float(s), float(self.F1), float(self.F2), float(self.F3), float(T1), float(T2), float(T3), float(T4), float(T_D40), float(T5), float(T6), float(self.TOELE), float(T_T_1), float(T_T_2), float(f), float(s_k), float(s_k2), float(k), float(s_V), float(s_V_K), float(r_tilde), float(T_BP1), float(T_BP2), float(T_WT1), float(T_WT2), float(T_V), float(T_V2), float(m), float(self.r), float(self.T_V_tilde),float(güte_M), float(güte_K),float(güte_r))
+        #self.logger.update(text=string, dt=self.dt)
+        
+        # aktualisieren der States zum überwachen und testen des reglers
+        self.states_monitoring.update({
+                'F1': F1,
+                'F2': F2,
+                'F3': F3,
+                'T1': T1,
+                'T2': T2,
+                'T3': T3,
+                'T4': T4,
+                'T_D40': T_D40,
+                'T5': T5,
+                'T6': T6,
+                'TOELE': self.TOELE,
+                'T_T_1': T_T_1,
+                'T_T_2': T_T_2,
+                'f': f,
+                's_k': s_k,
+                's_k2': s_k2,
+                's_V': s_V,
+                's_V_K': s_V_K,
+                'r_tilde': r_tilde,
+                'T_BP1': T_BP1,
+                'T_BP2': T_BP2,
+                'T_WT1': T_WT1,
+                'T_WT2': T_WT2,
+                'T_V_tilde': self.T_V_tilde,
+                'T_V': T_V,
+                'T_V2': T_V2,
+                'm': m,
+                'r_alt': self.r_alt,
+                'r': self.r,
+                'F_nach_r': F_nach_r,
+                'T_tank': T_tank,
+                'T_kuehl': T_kuehl,
+                # Füge hier weitere Variablen hinzu, falls vorhanden
+            })
+        
+      
         ############ output #############
         self.output["r_soll"] = self.r
         self.output["T_D40"] = T_D40

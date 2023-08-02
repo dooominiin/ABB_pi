@@ -1,0 +1,226 @@
+[
+  {
+    "name": "F1",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "F2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "F3",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T1",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T3",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T4",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_D40",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T5",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T6",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "TOELE",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_T_1",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_T_2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "f",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "s_k",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "s_k2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "s_V",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "s_V_K",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "r_tilde",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_BP1",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_BP2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_WT1",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_WT2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_V_tilde",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_V",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_V2",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "m",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "r_alt",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "r",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "F_nach_r",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_tank",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "T_kuehl",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  }
+]

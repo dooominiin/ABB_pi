@@ -1,5 +1,22 @@
 import os
 
+class Monitor:
+    def __init__(self, zeitintervall, server):
+        self.timer = 0
+        self.zeitintervall = zeitintervall
+        self.server = server
+    
+    def step(self, dt):
+        self.timer += dt
+        flag = False
+        if self.timer >= self.zeitintervall:
+            self.timer = 0
+            flag = True
+        return flag
+
+    def update(self, states):
+        self.server.update(states)
+
 class LogFile:
     def __init__(self, dateiname, variabelnamen ,anzahl_zeilen, Zeitschritt):
         # Zeitschritt bestimmt, in welchem intervall datenpunkte gespeichert werden
@@ -38,6 +55,11 @@ class LogFile:
                 anzahl_behalten = min(self.anzahl_zeilen, anzahl_zeilen)
                 gekuerzter_inhalt = inhalt[:anzahl_behalten]
                 datei.writelines(gekuerzter_inhalt)
+
+
+
+
+
 
 if __name__ == "__main__":
     # Beispielaufruf

@@ -5,11 +5,12 @@ import numpy as np
 import os
 import json
 from enum import Enum
+from Monitor.datalogger import Monitor
 
 
 
 class Regler:
-    def __init__(self,dt):
+    def __init__(self,dt,server):
         self.terminate = False
         self.running = True
         self.thread = Thread(target=self.loop_forever)
@@ -28,9 +29,14 @@ class Regler:
         self.client = None
         self.Smithpredictor = Smithpredictor(dt)
 
+        self.monitor = Monitor(zeitintervall=1,server=server)
+
+
     def set_opc_client(self, client):
         self.client = client
     
+ 
+
     def set_input(self, input, node):
         with open("OPC/variablen.json", "r", encoding='utf-8') as file:
             variables = json.load(file)
@@ -68,7 +74,7 @@ class Regler:
             if Zustand.beschleunigt == Zustand(self.input["state"]):
                 self.dt = 0   
                 self.output = self.Smithpredictor.update(self.input)
-            ##################### Regler fertig ####################
+            ##################### Regler fertig, opc variablen update ####################
             with open("OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
                 for var_info in variables:
@@ -78,6 +84,10 @@ class Regler:
                     if var_info["is_output"]:
                         #print("update output",name,float(self.output[name]))
                         self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+            ######################Monitoring über OPC################
+            if self.monitor.step(self.dt):
+                self.alle_states = self.Smithpredictor.getAllStates()
+                self.monitor.update(self.alle_states)
 
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
