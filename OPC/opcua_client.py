@@ -27,6 +27,9 @@ class SubHandler(object):
 
 class OpcUaClient:
     def __init__(self, dt, regler):
+        self.output_update_intervall = 1
+        self.zähler = 0                
+        self.am_senden = False
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
         self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
         self.terminate = False
@@ -81,7 +84,27 @@ class OpcUaClient:
 
     
     def set_output(self,output):
-        self.output = output
+        if not self.am_senden:
+            self.output = output
+         
+    def send(self):
+        self.zähler += self.dt
+        if self.zähler >= self.output_update_intervall:
+            with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+                variables = json.load(file)
+            self.am_senden = True
+            for var_info in variables:
+                name = var_info["name"]
+                namespace = var_info["namespace"]
+                string = var_info["string"]
+                if var_info["is_output"]:
+                    #print("update output",name,float(self.output[name]))
+                    time_1=time.time()
+                    self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+            self.am_senden = False
+            self.zähler = 0
+
+        
 
     def loop_start(self):
         if not self.terminate:
@@ -90,6 +113,7 @@ class OpcUaClient:
     def loop_forever(self):
         while not self.terminate:                       
             start_time = time.time()  # Startzeit speichern
+            self.send()
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
   

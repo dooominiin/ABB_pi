@@ -75,20 +75,8 @@ class Regler:
                 self.output = self.Smithpredictor.update(self.input)
             time_regler = time.time()
             ##################### Regler fertig, opc variablen update ####################
-            with open("OPC/variablen.json", "r", encoding='utf-8') as file:
-                variables = json.load(file)
-            time_fileopen = time.time()
-            for var_info in variables:
-                name = var_info["name"]
-                namespace = var_info["namespace"]
-                string = var_info["string"]
-                if var_info["is_output"]:
-                    #print("update output",name,float(self.output[name]))
-                    time_1=time.time()
-                    self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
-                    time_2 = time.time()
-                    print("Zeit client: {:.4f} var: {}".format((time_2-time_1),name))
-            time_opc_client = time.time()
+            self.client.set_output(output = self.output)
+            
             ######################Monitoring über OPC################
             if self.monitor.step(self.dt):
                 alle_states = self.Smithpredictor.getAllStates()
