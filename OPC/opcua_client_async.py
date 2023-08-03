@@ -1,9 +1,14 @@
 from threading import Thread
 import time
-from opcua import Client, ua
+import asyncio
 import json
+from asyncua import Client
+import logging
 
 # Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public Subscriber Struktur zur verfügung. Das bedeuted, dass der CLient beim Leitsystem bei den Sensorwerten "subscribed" und dann benachrichtigt wird, wenn neue Werte vorliegen. Die Variabeln zum werden über das variabeln.json File verwaltet. 
+
+_logger = logging.getLogger(__name__)
+
 
 class SubHandler(object):
 
@@ -24,86 +29,53 @@ class SubHandler(object):
         print("Python: New event", event)
 
 
+async def main():
+    url = "opc.tcp://localhost:4840/freeopcua/server/"
+    #url = "opc.tcp://192.168.43.97:4840/freeopcua/server/"# adresse lenovo hotspot
 
-class OpcUaClient:
-    def __init__(self, dt, regler):
-        self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
-        self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo hotspot
-        self.terminate = False
-        self.running = True
-        zähler = 0
-        while not self.terminate:
-            try:
-                self.client.connect()
-                print("Verbindung zum OPC Server erfolgreich")
-                break
-            except:
-                print(f"Verbindung zum OPC Server nicht möglich! {zähler+1}er Versuch!")
-                zähler += 1
-                if zähler >= 2:
-                    print(f"Abbruch nach {zähler} Versuchen!")
-                    self.terminate = True
-                    self.running = False
+    async with Client(url=url) as client:
+        _logger.info("Root node is: %r", client.nodes.root)
+        _logger.info("Objects node is: %r", client.nodes.objects)
 
-        self.thread = Thread(target=self.loop_forever)
-        self.output = 0
-        self.dt = dt # diskretisierungszeitschritt
-        
-        
-        self.regler = regler
-        self.regler.set_opc_client(self)
-        if self.terminate:
-            self.regler.loop_stop()
-            print("Regler gestoppt durch Client")
-        else:
-            try:            
-                # subscribing to a variable node
-                self.handler = SubHandler()
-                self.handler.get_regler(self.regler)
-                self.subscription = self.client.create_subscription(500, self.handler) 
-                
-                # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
-                with open("OPC/variablen.json", "r", encoding='utf-8') as file:
-                    variables = json.load(file)
-                    for var_info in variables:
-                        name = var_info["name"]
-                        namespace = var_info["namespace"]
-                        string = var_info["string"]
-                        if var_info["subscribe"]:
-                            node=self.client.get_node(nodeid=f"{namespace};{string}")
-                            self.handle = self.subscription.subscribe_data_change(node)
-                            print("subscribed to: ",name)
+        # Node objects have methods to read and write node attributes as well as browse or populate address space
+        _logger.info("Children of root are: %r", await client.nodes.root.get_children())
 
-            except Exception as e:
-                print("subscribe der Variabeln nicht möglich!")
-                print(e)
-                self.terminate = True
 
-    
-    def set_output(self,output):
-        self.output = output
+       
+        # get a specific node knowing its node id
+        #var = client.get_node(ua.NodeId(1002, 2))
+        var = client.get_node("ns=5;s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//M_kuehl:IO.In.Value")
+        print(var)
+        #await var.read_data_value() # get value of node as a DataValue object
+        value =  (var.read_value()) # get value of node as a python builtin
+        print(value)
+        #await var.write_value(ua.Variant([23], ua.VariantType.Int64)) #set node value using explicit data type
+        #await var.write_value(3.9) # set node value using implicit data type
 
-    def loop_start(self):
-        if not self.terminate:
-            self.thread.start()
+        # Now getting a variable node using its browse path
+        #myvar = await client.nodes.root.get_child(["0:Objects", "2:MyObject", "2:MyVariable"])
+        #obj = await client.nodes.root.get_child(["0:Objects", "2:MyObject"])
+        #_logger.info("myvar is: %r", myvar)
 
-    def loop_forever(self):
-        while not self.terminate:                       
-            start_time = time.time()  # Startzeit speichern
-            elapsed_time = time.time() - start_time  # Zeit seit Start speichern
-            time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-  
-    def loop_stop(self):
-        self.terminate = True
-        try:
-            self.thread.join()
-            if hasattr(self.client, 'subscription'):
-                self.client.subscription.delete()
-            self.client.disconnect()
-        except:
-            pass
-        self.running = False
+        # subscribing to a variable node
+        #handler = SubHandler()
+        #sub = await client.create_subscription(10, handler)
+        #handle = await sub.subscribe_data_change(myvar)
+        #await asyncio.sleep(0.1)
 
-    def is_running(self):
-        return self.running
-        
+        # we can also subscribe to events from server
+        #await sub.subscribe_events()
+        # await sub.unsubscribe(handle)
+        # await sub.delete()
+
+        # calling a method on server
+        #res = await obj.call_method("2:multiply", 3, "klk")
+        #_logger.info("method result is: %r", res)
+        while True:
+            await asyncio.sleep(1)
+            value =  await (var.read_value()) # get value of node as a python builtin
+            print(value)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    asyncio.run(main())
