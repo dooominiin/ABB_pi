@@ -28,7 +28,7 @@ class SubHandler(object):
 class OpcUaClient:
     def __init__(self, dt, regler):
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
-        self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo hotspot
+        self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
         self.terminate = False
         self.running = True
         zähler = 0

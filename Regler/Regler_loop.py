@@ -15,7 +15,9 @@ class Regler:
 
         # JSON laden und Namen auslesen
         with open("OPC/variablen.json", "r", encoding='utf-8') as file:
+            
             variables = json.load(file)
+            
             variable_names = [var_info["name"] for var_info in variables]
         # Input-Liste initialisieren
         self.input = {name: 60.0 if name.startswith("T") else 0.0 for name in variable_names}
@@ -71,23 +73,34 @@ class Regler:
             if Zustand.beschleunigt == Zustand(self.input["state"]):
                 self.dt = 0   
                 self.output = self.Smithpredictor.update(self.input)
+            time_regler = time.time()
             ##################### Regler fertig, opc variablen update ####################
             with open("OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
-                for var_info in variables:
-                    name = var_info["name"]
-                    namespace = var_info["namespace"]
-                    string = var_info["string"]
-                    if var_info["is_output"]:
-                        #print("update output",name,float(self.output[name]))
-                        self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+            time_fileopen = time.time()
+            for var_info in variables:
+                name = var_info["name"]
+                namespace = var_info["namespace"]
+                string = var_info["string"]
+                if var_info["is_output"]:
+                    #print("update output",name,float(self.output[name]))
+                    time_1=time.time()
+                    self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                    time_2 = time.time()
+                    print("Zeit client: {:.4f} var: {}".format((time_2-time_1),name))
+            time_opc_client = time.time()
             ######################Monitoring über OPC################
             if self.monitor.step(self.dt):
                 alle_states = self.Smithpredictor.getAllStates()
                 self.monitor.update(alle_states)
-
+                print("Werte aktualisiert!")
+            time_opc_server = time.time()
+            
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
+            
+            print("Regler: {:.4f}\tOPC Client: {:.4f}\tOPC Server: {:.4f}\tfileopen: {:.4f}".format(time_regler-start_time,time_opc_client-time_regler, time_opc_server-time_opc_client ,time_fileopen-time_regler))
+
             print(Zustand(self.input["state"]),f"benötigte zeit: {elapsed_time*1000:3.2f} ms")
 
 
