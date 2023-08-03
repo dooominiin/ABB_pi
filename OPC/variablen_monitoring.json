@@ -1,5 +1,19 @@
 [
   {
+    "name": "s",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "F",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+   {
     "name": "F1",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -21,49 +35,7 @@
     "writable": false
   },
   {
-    "name": "T1",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
-    "name": "T2",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
-    "name": "T3",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
-    "name": "T4",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
     "name": "T_D40",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
-    "name": "T5",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
-    "name": "T6",
     "namespace": "ns=4",
     "string": "s=root//states",
     "type": "Float",
@@ -112,6 +84,13 @@
     "writable": false
   },
   {
+    "name": "k",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+   {
     "name": "s_V",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -203,13 +182,6 @@
     "writable": false
   },
   {
-    "name": "F_nach_r",
-    "namespace": "ns=4",
-    "string": "s=root//states",
-    "type": "Float",
-    "writable": false
-  },
-  {
     "name": "T_tank",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -218,6 +190,27 @@
   },
   {
     "name": "T_kuehl",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "güte_M",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "güte_K",
+    "namespace": "ns=4",
+    "string": "s=root//states",
+    "type": "Float",
+    "writable": false
+  },
+  {
+    "name": "güte_r",
     "namespace": "ns=4",
     "string": "s=root//states",
     "type": "Float",

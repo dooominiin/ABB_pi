@@ -4,7 +4,10 @@ Created on Fri Feb 10 16:34:38 2023
 
 @author: domin
 """
+# enthält alle modelle, welche im regler zum einsatz kommen. Dazu gehören filterblöcke, Regler und physikalische modelle der Anlage.
+
 # link zur diskretisierung mit tustin: https://ch.mathworks.com/support/search.html/answers/578164-why-do-i-get-different-outputs-with-bilinear-and-c2d-sysc-ts-tustin-matlab-functions.html?fq%5B%5D=asset_type_name:answer&fq%5B%5D=category:signal/pulse-and-transition-metrics&page=1
+
 import numpy as np
 import time
 

@@ -8,10 +8,9 @@ from Regler.modelle import PI_Regler
 from Regler.modelle import sensorfilter
 from Regler.modelle import LookupTable
 from Regler.modelle import Mittelwertfilter
-from Monitor.datalogger import LogFile
+from Monitor.ueberwachung import Monitor
 import json
 import numpy as np
-import matplotlib.pyplot as plt
 
 # Implementiert einen Smithpredicter, der die eigentliche regelung vornimmt. 
 
@@ -35,42 +34,7 @@ class Smithpredictor:
         #self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=3600,Zeitschritt=1)
         
         # Erstelle ein Dictionary mit vordefinierten Schlüsseln und initialisiere die Werte mit 0
-        self.states_monitoring = {
-            'F1': 0,
-            'F2': 0,
-            'F3': 0,
-            'T1': 0,
-            'T2': 0,
-            'T3': 0,
-            'T4': 0,
-            'T_D40': 0,
-            'T5': 0,
-            'T6': 0,
-            'TOELE': 0,
-            'T_T_1': 0,
-            'T_T_2': 0,
-            'f': 0,
-            's_k': 0,
-            's_k2': 0,
-            's_V': 0,
-            's_V_K': 0,
-            'r_tilde': 0,
-            'T_BP1': 0,
-            'T_BP2': 0,
-            'T_WT1': 0,
-            'T_WT2': 0,
-            'T_V_tilde': 0,
-            'T_V': 0,
-            'T_V2': 0,
-            'm': 0,
-            'r_alt': 0,
-            'r': 0,
-            'F_nach_r': 0,
-            'T_tank': 0,
-            'T_kuehl': 0,
-            # Füge hier weitere Schlüssel hinzu, falls benötigt
-        }
-        
+        self.states_monitoring = Monitor.states_dictionary()
         
         # JSON laden und Namen auslesen für den ABB OPC server
         with open("OPC/variablen.json", "r", encoding='utf-8') as file:
@@ -171,10 +135,10 @@ class Smithpredictor:
             T4 = self.tot2_anlage.update(F=F3, input=T3, dt=self.dt)
 
             T_D40 = self.misch_anlage.update(F1=F1,F2=F2,F3=F3,T_BP2=T2,T_WT2=T4)
-            T_D40 = 1+self.filter_V.update(input=T_D40)
+            T_D40 = self.filter_V.update(input=T_D40)
 
             T5 = self.tot3_anlage.update(F=F1,input=T_D40, dt=self.dt)
-            T6 =2+ self.rohr2_anlage.update(F=F1, input=T5)
+            T6 = self.rohr2_anlage.update(F=F1, input=T5)
             self.TOELE  = self.tot4_anlage.update(F=F1, input=T6, dt=self.dt)
             self.TOELE = self.filter_T.update(input=self.TOELE)
 
@@ -239,22 +203,18 @@ class Smithpredictor:
         
         # aktualisieren der States zum überwachen und testen des reglers
         self.states_monitoring.update({
-                'F1': F1,
-                'F2': F2,
-                'F3': F3,
-                'T1': T1,
-                'T2': T2,
-                'T3': T3,
-                'T4': T4,
+                'F' : F,
+                'F1': self.F1,
+                'F2': self.F2,
+                'F3': self.F3,
                 'T_D40': T_D40,
-                'T5': T5,
-                'T6': T6,
                 'TOELE': self.TOELE,
                 'T_T_1': T_T_1,
                 'T_T_2': T_T_2,
                 'f': f,
                 's_k': s_k,
                 's_k2': s_k2,
+                'k' : k,
                 's_V': s_V,
                 's_V_K': s_V_K,
                 'r_tilde': r_tilde,
@@ -268,9 +228,11 @@ class Smithpredictor:
                 'm': m,
                 'r_alt': self.r_alt,
                 'r': self.r,
-                'F_nach_r': F_nach_r,
                 'T_tank': T_tank,
                 'T_kuehl': T_kuehl,
+                'güte_M': güte_M,
+                'güte_K' : güte_K,
+                'güte_r' : güte_r
                 # Füge hier weitere Variablen hinzu, falls vorhanden
             })
         

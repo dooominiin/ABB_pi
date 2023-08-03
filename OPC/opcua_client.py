@@ -3,6 +3,8 @@ import time
 from opcua import Client, ua
 import json
 
+# Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public Subscriber Struktur zur verfügung. Das bedeuted, dass der CLient beim Leitsystem bei den Sensorwerten "subscribed" und dann benachrichtigt wird, wenn neue Werte vorliegen. Die Variabeln zum werden über das variabeln.json File verwaltet. 
+
 class SubHandler(object):
 
     """

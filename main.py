@@ -23,23 +23,26 @@ sys.stderr = log_datei
 print("main.py gestartet")
 
 
+# OPC-Server zum überwachen des Reglers, enthält alle States des Reglers
+server = OpcUaServer_Monitoring(aktualisierungsintervall = 1)
 
-server = OpcUaServer_Monitoring()
-r = Regler(dt = 0.1, server=server)
+# Smithpredictor Regler Objekt, dt = Diskretisierungszeitintervall [s]
+regler = Regler(dt = 0.1, server=server)
 
-c = OpcUaClient(dt = 0.01,regler = r)
+# OPC-Client, verbunden mit Leitsystem, INPUT + OUTPUT
+client = OpcUaClient(dt = 0.01,regler = regler)
 
-c.loop_start()
-r.loop_start()
+client.loop_start()
+regler.loop_start()
 
 try:
-    while c.is_running() or r.is_running() or server.is_running():
+    while client.is_running() or regler.is_running() or server.is_running():
         time.sleep(0.1)
 
 except KeyboardInterrupt:
     print("Keyboard interrupt received. Exiting...")
 finally:
-    r.loop_stop()
-    c.loop_stop()
+    regler.loop_stop()
+    client.loop_stop()
     server.loop_stop()
     log_datei.close()

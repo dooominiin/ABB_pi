@@ -1,13 +1,11 @@
 import time
 from threading import Thread
 from Regler.Smithpredictor import Smithpredictor
-import numpy as np
-import os
 import json
 from enum import Enum
-from Monitor.datalogger import Monitor
+from Monitor.ueberwachung import Monitor
 
-
+# Die Reglerklasse führt den Smithpredictor Regler aus, führt INPUT und OUTPUT mit Regler und OPC-Client zusammen und enthält die Ablääufe für die verschiedenen Betriebszustände des Reglers. 
 
 class Regler:
     def __init__(self,dt,server):
@@ -20,7 +18,7 @@ class Regler:
             variables = json.load(file)
             variable_names = [var_info["name"] for var_info in variables]
         # Input-Liste initialisieren
-        self.input = {name: 60 if name.startswith("T") else 0 for name in variable_names}
+        self.input = {name: 60.0 if name.startswith("T") else 0.0 for name in variable_names}
 
         self.output = self.input.copy()
 
@@ -28,8 +26,7 @@ class Regler:
         self.dt_alt = dt
         self.client = None
         self.Smithpredictor = Smithpredictor(dt)
-
-        self.monitor = Monitor(zeitintervall=1,server=server)
+        self.monitor = Monitor(server=server)
 
 
     def set_opc_client(self, client):
