@@ -76,7 +76,7 @@ class Regler:
             time_regler = time.time()
             ##################### Regler fertig, opc variablen update ####################
             self.client.set_output(output = self.output)
-            
+            time_opc_client = time.time()
             ######################Monitoring über OPC################
             if self.monitor.step(self.dt):
                 alle_states = self.Smithpredictor.getAllStates()
@@ -87,7 +87,7 @@ class Regler:
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
             
-            print("Regler: {:.4f}\tOPC Client: {:.4f}\tOPC Server: {:.4f}\tfileopen: {:.4f}".format(time_regler-start_time,time_opc_client-time_regler, time_opc_server-time_opc_client ,time_fileopen-time_regler))
+            print("Regler: {:.4f}\tOPC Client: {:.4f}\tOPC Server: {:.4f}".format(time_regler-start_time,time_opc_client-time_regler, time_opc_server-time_opc_client))
 
             print(Zustand(self.input["state"]),f"benötigte zeit: {elapsed_time*1000:3.2f} ms")
 
