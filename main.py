@@ -10,15 +10,15 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
 os.chdir(script_dir)
+logging = False
 
-# Öffne eine Logdatei zum Schreiben
-log_datei = open('main.log', 'a')
-
-# Umlenken der Standardausgabe (stdout) auf die Logdatei
-sys.stdout = log_datei
-
-# Umlenken der Standardfehlerausgabe (stderr) auf die Logdatei
-sys.stderr = log_datei
+if logging:
+    # Öffne eine Logdatei zum Schreiben
+    log_datei = open('main.log', 'a')
+    # Umlenken der Standardausgabe (stdout) auf die Logdatei
+    sys.stdout = log_datei
+    # Umlenken der Standardfehlerausgabe (stderr) auf die Logdatei
+    sys.stderr = log_datei
 
 print("main.py gestartet")
 
@@ -45,4 +45,4 @@ finally:
     regler.loop_stop()
     client.loop_stop()
     server.loop_stop()
-    log_datei.close()
+    if logging: log_datei.close()
