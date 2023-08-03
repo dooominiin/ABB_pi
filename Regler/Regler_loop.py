@@ -81,7 +81,7 @@ class Regler:
             if self.monitor.step(self.dt):
                 alle_states = self.Smithpredictor.getAllStates()
                 self.monitor.update(alle_states)
-                print("Werte aktualisiert!")
+                print("Werte für Monitor Server aktualisiert!")
             time_opc_server = time.time()
             
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern

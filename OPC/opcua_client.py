@@ -85,11 +85,14 @@ class OpcUaClient:
     
     def set_output(self,output):
         if not self.am_senden:
+            print("output im client objekt aktualisiert")
             self.output = output
          
     def send(self):
         self.zähler += self.dt
         if self.zähler >= self.output_update_intervall:
+            print("output wird gesendet")
+            t1 = time.time()
             with open("OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
             self.am_senden = True
@@ -100,7 +103,9 @@ class OpcUaClient:
                 if var_info["is_output"]:
                     #print("update output",name,float(self.output[name]))
                     time_1=time.time()
-                    self.client.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                    self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+            t2 = time.time()
+            print("output wurde gesendet in {:.4f} s".format(t2-t1))
             self.am_senden = False
             self.zähler = 0
 
