@@ -3,6 +3,7 @@ from threading import Thread
 from Regler.Smithpredictor import Smithpredictor
 import json
 from enum import Enum
+import datetime
 
 # Die Reglerklasse führt den Smithpredictor Regler aus, führt INPUT und OUTPUT mit Regler und OPC-Client zusammen und enthält die Ablääufe für die verschiedenen Betriebszustände des Reglers. 
 
@@ -80,8 +81,9 @@ class Regler:
             ####################### Zeitmessung ###########################
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-            self.maxtime = max(self.maxtime,elapsed_time)
-            print("maxtime: {:.4f}s".format(self.maxtime))
+            if self.maxtime< elapsed_time:
+                self.maxtime = max(self.maxtime,elapsed_time)
+                print("neue maximalzeit: {:.4f}s Zeit: {}".format(self.maxtime, datetime.datetime.now().time()))
             #print("Regler: {:.4f}\tOPC Client: {:.4f}\tOPC Server: {:.4f}".format(time_regler-start_time,time_opc_client-time_regler, time_opc_server-time_opc_client))
             #print(Zustand(self.input["state"]),f"benötigte zeit: {elapsed_time*1000:3.2f} ms")
 

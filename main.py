@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 from OPC.opcua_client import OpcUaClient
 from OPC.opcua_monitoring_server import OpcUaServer_Monitoring

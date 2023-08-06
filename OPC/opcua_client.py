@@ -3,7 +3,12 @@ import time
 from opcua import Client, ua
 import json
 
-# Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public Subscriber Struktur zur verfügung. Das bedeuted, dass der CLient beim Leitsystem bei den Sensorwerten "subscribed" und dann benachrichtigt wird, wenn neue Werte vorliegen. Die Variabeln zum werden über das variabeln.json File verwaltet. 
+# Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt 
+# INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public 
+# Subscriber Struktur zur verfügung. Das bedeuted, dass der CLient beim 
+# Leitsystem bei den Sensorwerten "subscribed" und dann benachrichtigt 
+# wird, wenn neue Werte vorliegen. Die Variabeln zum werden über das 
+# variabeln.json File verwaltet. 
 
 class SubHandler(object):
 
@@ -43,7 +48,7 @@ class OpcUaClient:
             except:
                 print(f"Verbindung zum OPC Server nicht möglich! {zähler+1}er Versuch!")
                 zähler += 1
-                if zähler >= 2:
+                if zähler >= 5:
                     print(f"Abbruch nach {zähler} Versuchen!")
                     self.terminate = True
                     self.running = False
@@ -85,13 +90,11 @@ class OpcUaClient:
     
     def set_output(self,output):
         if not self.am_senden:
-            print("output im client objekt aktualisiert")
             self.output = output
          
     def send(self):
         self.zähler += self.dt
         if self.zähler >= self.output_update_intervall:
-            print("output wird gesendet")
             t1 = time.time()
             with open("OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
@@ -105,7 +108,7 @@ class OpcUaClient:
                     time_1=time.time()
                     self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
             t2 = time.time()
-            print("output wurde gesendet in {:.4f} s".format(t2-t1))
+            #print("output wurde gesendet in {:.4f} s".format(t2-t1))
             self.am_senden = False
             self.zähler = 0
 

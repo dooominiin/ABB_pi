@@ -62,12 +62,12 @@ class OpcUaServer_Monitoring:    # create server object
     def update(self,states):
         if self.is_free:    
             self.states = states
-            print("states im server objekt aktualisiert")
+            #print("states im server objekt aktualisiert")
 
     def send(self):
         self.zähler += self.dt
         if self.zähler >= self.intervall:
-            print("Monitoring States werden aktualisiert")
+            #print("Monitoring States werden aktualisiert")
             t1 = time.time()
             with open("OPC/variablen_monitoring.json", "r", encoding='utf-8') as file:
                 self.variables = json.load(file)
@@ -78,10 +78,8 @@ class OpcUaServer_Monitoring:    # create server object
                 string = "{}//{}".format(var_info["string"],name)
                 #node_id = ua.NodeId.from_string(f"{namespace};{string}")
                 var = self.server.get_node(f"{namespace};{string}")
-                #print(var)
                 var.set_value(float(self.states[name]))
-                print(var)
-            print("Monitoring States wurden in {:.4f}s aktualisiert".format(time.time()-t1))
+            #print("Monitoring States wurden in {:.4f}s aktualisiert".format(time.time()-t1))
             self.is_free = True
             self.zähler = 0
             
