@@ -10,7 +10,7 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
 os.chdir(script_dir)
-logging = False
+logging = True
 
 if logging:
     # Öffne eine Logdatei zum Schreiben
@@ -26,11 +26,11 @@ print("main.py gestartet")
 # OPC-Server zum überwachen des Reglers, enthält alle States des Reglers
 server = OpcUaServer_Monitoring(aktualisierungsintervall = 1)
 
-# Smithpredictor Regler Objekt, dt = Diskretisierungszeitintervall [s]
+# Smithpredictor Regler Objekt, dt = Diskretisierungszeitschritt [s]
 regler = Regler(dt = 0.1, server=server)
 
 # OPC-Client, verbunden mit Leitsystem, INPUT + OUTPUT
-client = OpcUaClient(dt = 0.01,regler = regler)
+client = OpcUaClient(dt = 0.01,regler = regler, output_update_intervall = 1)
 
 client.loop_start()
 regler.loop_start()

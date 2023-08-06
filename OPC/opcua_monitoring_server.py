@@ -1,7 +1,7 @@
 from threading import Thread
 import time
 import json
-from Monitor.ueberwachung import Monitor
+from Regler.Smithpredictor import Smithpredictor
 from opcua import ua, Server
 
 # Dieser OPCUA-Server ist dafür gedacht, die inneren Zustände des Reglers nach aussen sichtbar zu machen. Er ist read-only! So kann über ein externes Gerät wie ein Laptob der Zustand des Reglers überwacht werden. Dafür muss man einfach im gleichen Netzwerk wie das Raspberry Pi sein und auf den gleichen Port zugreifen. 
@@ -9,10 +9,12 @@ from opcua import ua, Server
 class OpcUaServer_Monitoring:    # create server object
     def __init__(self,aktualisierungsintervall):
         self.intervall = aktualisierungsintervall
+        self.is_free = True
         self.terminate = False
         self.running = True
+        self.zähler = 0
         self.thread = Thread(target=self.loop_forever)
-        self.dt = 0.1
+        self.dt = 0.01
         self.server = Server()
         # set server name
         self.server.set_server_name("OPC Server Schmieroeltemperaturregler Monitoring")
@@ -27,7 +29,7 @@ class OpcUaServer_Monitoring:    # create server object
         # create an instance of our device type in the address space
         device = self.server.nodes.objects.add_object(
             idx, "Werte", objecttype=device_type)
-        self.states_monitoring = Monitor.states_dictionary()
+        self.states = Smithpredictor.states_dictionary()
 
         # Lade die Variablen aus der JSON-Datei und erstelle sie im OPC-Server
         with open("OPC/variablen_monitoring.json", "r", encoding='utf-8') as file:
@@ -58,18 +60,31 @@ class OpcUaServer_Monitoring:    # create server object
         self.loop_start()
     
     def update(self,states):
-        #print(states)
-        for var_info in self.variables:
-            name = var_info["name"]
-            namespace = var_info["namespace"]
-            string = "{}//{}".format(var_info["string"],name)
-            #node_id = ua.NodeId.from_string(f"{namespace};{string}")
-            var = self.server.get_node(f"{namespace};{string}")
-            #print(var)
-            var.set_value(float(states[name]))
-    
-    def get_intervall(self):
-        return self.intervall
+        if self.is_free:    
+            self.states = states
+            print("states im server objekt aktualisiert")
+
+    def send(self):
+        self.zähler += self.dt
+        if self.zähler >= self.intervall:
+            print("Monitoring States werden aktualisiert")
+            t1 = time.time()
+            with open("OPC/variablen_monitoring.json", "r", encoding='utf-8') as file:
+                self.variables = json.load(file)
+            self.is_free = False
+            for var_info in self.variables:
+                name = var_info["name"]
+                namespace = var_info["namespace"]
+                string = "{}//{}".format(var_info["string"],name)
+                #node_id = ua.NodeId.from_string(f"{namespace};{string}")
+                var = self.server.get_node(f"{namespace};{string}")
+                #print(var)
+                var.set_value(float(self.states[name]))
+                print(var)
+            print("Monitoring States wurden in {:.4f}s aktualisiert".format(time.time()-t1))
+            self.is_free = True
+            self.zähler = 0
+            
     
     def loop_start(self):
         if not self.terminate:
@@ -78,6 +93,7 @@ class OpcUaServer_Monitoring:    # create server object
     def loop_forever(self):
         while not self.terminate:                       
             start_time = time.time()  # Startzeit speichern
+            self.send()
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
   

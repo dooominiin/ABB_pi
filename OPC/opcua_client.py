@@ -26,8 +26,8 @@ class SubHandler(object):
 
 
 class OpcUaClient:
-    def __init__(self, dt, regler):
-        self.output_update_intervall = 1
+    def __init__(self, dt, regler,output_update_intervall):
+        self.output_update_intervall = output_update_intervall
         self.zähler = 0                
         self.am_senden = False
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")

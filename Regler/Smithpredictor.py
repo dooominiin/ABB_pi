@@ -8,7 +8,6 @@ from Regler.modelle import PI_Regler
 from Regler.modelle import sensorfilter
 from Regler.modelle import LookupTable
 from Regler.modelle import Mittelwertfilter
-from Monitor.ueberwachung import Monitor
 import json
 import numpy as np
 
@@ -34,7 +33,7 @@ class Smithpredictor:
         #self.logger = LogFile(dateiname="Monitor/log.txt",variabelnamen=names,anzahl_zeilen=3600,Zeitschritt=1)
         
         # Erstelle ein Dictionary mit vordefinierten Schlüsseln und initialisiere die Werte mit 0
-        self.states_monitoring = Monitor.states_dictionary()
+        self.states_monitoring = Smithpredictor.states_dictionary()
         
         # JSON laden und Namen auslesen für den ABB OPC server
         with open("OPC/variablen.json", "r", encoding='utf-8') as file:
@@ -245,4 +244,39 @@ class Smithpredictor:
         
         return self.output
     
-  
+    def states_dictionary():
+        d = {
+            's' : 0,
+            'F' : 0,
+            'F1': 0,
+            'F2': 0,
+            'F3': 0,
+            'T_D40': 0,
+            'TOELE': 0,
+            'T_T_1': 0,
+            'T_T_2': 0,
+            'f': 0,
+            's_k': 0,
+            's_k2': 0,
+            'k' : 0,
+            's_V': 0,
+            's_V_K': 0,
+            'r_tilde': 0,
+            'T_BP1': 0,
+            'T_BP2': 0,
+            'T_WT1': 0,
+            'T_WT2': 0,
+            'T_V_tilde': 0,
+            'T_V': 0,
+            'T_V2': 0,
+            'm': 0,
+            'r_alt': 0,
+            'r': 0,
+            'T_tank': 0,
+            'T_kuehl': 0,
+            'güte_M': 0,
+            'güte_K' : 0,
+            'güte_r' : 0
+            # Füge hier weitere Schlüssel hinzu, falls benötigt
+        }
+        return d
