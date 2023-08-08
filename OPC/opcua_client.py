@@ -137,18 +137,18 @@ class OpcUaClient:
             self.thread.join()
         except Exception as e:
             print(e)
-            pass    
+                
         try:
             if hasattr(self.client, 'subscription'):
                 self.client.subscription.delete()
         except Exception as e:
             print(e)
-            pass
+            
         try:    
             self.client.disconnect()
         except Exception as e:
             print(e)
-            pass
+            
         self.running = False
 
     def is_running(self):
