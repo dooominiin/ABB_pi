@@ -280,3 +280,39 @@ class Smithpredictor:
             # Füge hier weitere Schlüssel hinzu, falls benötigt
         }
         return d
+    def states_dictionary_array():
+        d = {
+            's' : np.zeros(1),
+            'F' : np.zeros(1),
+            'F1': np.zeros(1),
+            'F2': np.zeros(1),
+            'F3': np.zeros(1),
+            'T_D4[0]': np.zeros(1),
+            'TOELE': np.zeros(1),
+            'T_T_1': np.zeros(1),
+            'T_T_2': np.zeros(1),
+            'f': np.zeros(1),
+            's_k': np.zeros(1),
+            's_k2': np.zeros(1),
+            'k' : np.zeros(1),
+            's_V': np.zeros(1),
+            's_V_K': np.zeros(1),
+            'r_tilde': np.zeros(1),
+            'T_BP1': np.zeros(1),
+            'T_BP2': np.zeros(1),
+            'T_WT1': np.zeros(1),
+            'T_WT2': np.zeros(1),
+            'T_V_tilde': np.zeros(1),
+            'T_V': np.zeros(1),
+            'T_V2': np.zeros(1),
+            'm': np.zeros(1),
+            'r_alt': np.zeros(1),
+            'r': np.zeros(1),
+            'T_tank': np.zeros(1),
+            'T_kuehl': np.zeros(1),
+            'güte_M': np.zeros(1),
+            'güte_K' : np.zeros(1),
+            'güte_r' : np.zeros(1)
+            # Füge hier weitere Schlüssel hinzu, falls benötigt
+        }
+        return d

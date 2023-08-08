@@ -19,21 +19,19 @@ class SubHandler(object):
     Do not do expensive, slow or network operation there. Create another 
     thread if you need to do such a thing
     """
-    def get_monitor(self,monitor):
-        self.monitor = monitor
+    def set_Plotter(self,meinPlotter):
+        self.meinPlotter = meinPlotter
 
     def datachange_notification(self, node, val, data):
-        #print("Python: New data change event", node, val)
-        #self.monitor.set_input(val,node) # neue daten zum monitorprogramm schicken
-        print("subscribed variabel {} wurde getriggert. {}".format(node,datetime.now().time()))
-
+        #print("subscribed variabel {} wurde getriggert. {}".format(node,datetime.now().time()))
+        self.meinPlotter.set_new_Data(node,val)
     def event_notification(self, event):
         print("Python: New event", event)
 
 
 
 class OpcUaClient:
-    def __init__(self, dt):
+    def __init__(self, dt, meinPlotter):
         self.dt = dt # diskretisierungszeitschritt
         self.zähler = 0                
         self.client = Client("opc.tcp://192.168.43.203:4842/freeopcua/server/")  # adresse lenovo handy hotspot
@@ -41,6 +39,7 @@ class OpcUaClient:
         self.running = False
         self.thread = Thread(target=self.loop_forever)
         zähler = 0
+        self.meinPlotter = meinPlotter
         while not self.terminate:
             try:
                 self.client.connect()
@@ -56,7 +55,7 @@ class OpcUaClient:
         if not self.terminate:
             # subscribing to a variable node
             self.handler = SubHandler()
-            #self.handler.get_regler(self.regler)
+            self.handler.set_Plotter(self.meinPlotter)
             self.subscription = self.client.create_subscription(500, self.handler) 
 
             try:    
@@ -83,12 +82,13 @@ class OpcUaClient:
                 self.loop_stop()
             else:
                 self.loop_start()
-                print("Thread gestartet")
+                print("OPC_Client Thread gestartet!")
     
     def set_output(self,output):
         if not self.am_senden:
             self.output = output
-         
+
+    
     def send(self):
         self.zähler += self.dt
         if self.zähler >= self.output_update_intervall:
