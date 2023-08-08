@@ -3,6 +3,7 @@ import time
 import json
 from Regler.Smithpredictor import Smithpredictor
 from opcua import ua, Server
+import datetime
 
 # Dieser OPCUA-Server ist dafür gedacht, die inneren Zustände des Reglers nach aussen sichtbar zu machen. Er ist read-only! So kann über ein externes Gerät wie ein Laptob der Zustand des Reglers überwacht werden. Dafür muss man einfach im gleichen Netzwerk wie das Raspberry Pi sein und auf den gleichen Port zugreifen. 
 
@@ -79,7 +80,7 @@ class OpcUaServer_Monitoring:    # create server object
                 #node_id = ua.NodeId.from_string(f"{namespace};{string}")
                 var = self.server.get_node(f"{namespace};{string}")
                 var.set_value(float(self.states[name]))
-            print("Monitoring States wurden in {:.4f}s aktualisiert".format(time.time()-t1))
+            print("Monitoring States wurden in {:.4f}s aktualisiert.  {}".format(time.time()-t1),datetime.now().time())
             self.is_free = True
             self.zähler = 0
             
