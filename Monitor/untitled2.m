@@ -68,7 +68,7 @@ while true
         
         
         toc
-        pause(0.0001)
+        pause(0.1)
         
     end
 end
