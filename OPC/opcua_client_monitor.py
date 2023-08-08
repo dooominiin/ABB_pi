@@ -2,6 +2,7 @@ from threading import Thread
 import time
 from opcua import Client, ua
 import json
+from datetime import datetime
 
 # Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt 
 # INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public 
@@ -24,7 +25,7 @@ class SubHandler(object):
     def datachange_notification(self, node, val, data):
         #print("Python: New data change event", node, val)
         #self.monitor.set_input(val,node) # neue daten zum monitorprogramm schicken
-        print("subscribed variabel {} wurde getriggert".format(node))
+        print("subscribed variabel {} wurde getriggert. {}".format(node,datetime.now().time()))
 
     def event_notification(self, event):
         print("Python: New event", event)
@@ -35,7 +36,7 @@ class OpcUaClient:
     def __init__(self, dt):
         self.dt = dt # diskretisierungszeitschritt
         self.zähler = 0                
-        self.client = Client("opc.tcp://192.168.43.203:4841/freeopcua/server/")  # adresse lenovo handy hotspot
+        self.client = Client("opc.tcp://192.168.43.203:4842/freeopcua/server/")  # adresse lenovo handy hotspot
         self.terminate = False
         self.running = True
         self.thread = Thread(target=self.loop_forever)
@@ -66,7 +67,7 @@ class OpcUaClient:
                     for var_info in variables:
                         name = var_info["name"]
                         namespace = var_info["namespace"]
-                        string = "{}{}".format(var_info["string"],name)
+                        string = "{}//{}".format(var_info["string"],name)
                         if var_info["subscribe"]:
                             try:            
                                 node=self.client.get_node(nodeid=f"{namespace};{string}")
@@ -74,7 +75,7 @@ class OpcUaClient:
                                 print("subscribed to: ",name)
 
                             except Exception as e:
-                                print("subscribe der Variabel {} nicht möglich!".format(node))
+                                print("subscribe der Variabel {} nicht möglich! name: >>{}<<name   string: {}".format(node, name, string))
                                 print(e)
                                 self.terminate = True
                                 raise
@@ -118,7 +119,7 @@ class OpcUaClient:
     def loop_forever(self):
         while not self.terminate:                       
             start_time = time.time()  # Startzeit speichern
-            self.send()
+            #self.send()
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
   
@@ -147,3 +148,11 @@ class OpcUaClient:
     
 if __name__ == "__main__":
     c = OpcUaClient(0.1)
+    try:
+        while True:
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt received. Exiting...")
+    finally:
+        c.loop_stop()
+    
