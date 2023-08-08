@@ -106,7 +106,11 @@ class OpcUaClient:
                 if var_info["is_output"]:
                     #print("update output",name,float(self.output[name]))
                     time_1=time.time()
-                    self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                    try:
+                        self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                    except Exception as e:
+                        self.terminate = True
+                        print(e)
             t2 = time.time()
             #print("output wurde gesendet in {:.4f} s".format(t2-t1))
             self.am_senden = False
@@ -131,18 +135,18 @@ class OpcUaClient:
             self.thread.join()
         except Exception as e:
             print(e)
-            pass    
+                
         try:
             if hasattr(self.client, 'subscription'):
                 self.client.subscription.delete()
         except Exception as e:
             print(e)
-            pass
+            
         try:    
             self.client.disconnect()
         except Exception as e:
             print(e)
-            pass
+            
         self.running = False
 
     def is_running(self):

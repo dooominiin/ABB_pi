@@ -1,3 +1,89 @@
 main.py gestartet
 Endpoints other than open requested but private key and certificate are not set.
 Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server erfolgreich
+subscribed to:  T_D40
+subscribed to:  T_tank
+subscribed to:  T_kuehl
+subscribed to:  r_ist
+subscribed to:  F
+subscribed to:  TOELE
+subscribed to:  s
+subscribed to:  state
+neue maximalzeit: 0.0145s Zeit: 15:00:04.606750
+neue maximalzeit: 0.0145s Zeit: 15:00:04.706939
+neue maximalzeit: 0.0152s Zeit: 15:00:04.907260
+neue maximalzeit: 0.0154s Zeit: 15:00:05.107649
+neue maximalzeit: 0.0176s Zeit: 15:00:05.207932
+neue maximalzeit: 0.0189s Zeit: 15:00:05.608546
+neue maximalzeit: 0.0236s Zeit: 15:00:05.808937
+neue maximalzeit: 0.0329s Zeit: 15:00:08.512130
+neue maximalzeit: 0.0334s Zeit: 15:00:13.618203
+neue maximalzeit: 0.0379s Zeit: 15:00:19.831601
+neue maximalzeit: 0.0390s Zeit: 15:00:23.837498
+neue maximalzeit: 0.0392s Zeit: 15:00:42.265045
+neue maximalzeit: 0.0549s Zeit: 15:03:01.875137
+neue maximalzeit: 0.0554s Zeit: 19:50:01.940538
+neue maximalzeit: 0.0572s Zeit: 21:07:01.697311
+neue maximalzeit: 0.0589s Zeit: 21:17:01.190679
+Exception in thread Thread-6:
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/threading.py", line 954, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.9/threading.py", line 892, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 124, in loop_forever
+    self.send()
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 109, in send
+    self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 217, in set_value
+    self.set_attribute(ua.AttributeIds.Value, datavalue)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 262, in set_attribute
+    result = self.server.write(params)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/ua_client.py", line 367, in write
+    data = self._uasocket.send_request(request)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/ua_client.py", line 83, in send_request
+    data = future.result(self.timeout)
+  File "/usr/lib/python3.9/concurrent/futures/_base.py", line 442, in result
+    raise TimeoutError()
+concurrent.futures._base.TimeoutError
+Keyboard interrupt received. Exiting...
+main.py gestartet
+Endpoints other than open requested but private key and certificate are not set.
+Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server erfolgreich
+subscribed to:  T_D40
+subscribed to:  T_tank
+subscribed to:  T_kuehl
+subscribed to:  r_ist
+subscribed to:  F
+subscribed to:  TOELE
+subscribed to:  s
+subscribed to:  state
+neue maximalzeit: 0.0143s Zeit: 22:24:32.120652
+neue maximalzeit: 0.0144s Zeit: 22:24:32.220878
+neue maximalzeit: 0.0149s Zeit: 22:24:32.321124
+neue maximalzeit: 0.0169s Zeit: 22:24:32.421379
+neue maximalzeit: 0.0223s Zeit: 22:24:34.724190
+neue maximalzeit: 0.0297s Zeit: 22:24:34.824416
+neue maximalzeit: 0.0298s Zeit: 22:24:34.924626
+neue maximalzeit: 0.0299s Zeit: 22:24:35.024856
+neue maximalzeit: 0.0305s Zeit: 22:24:35.425812
+neue maximalzeit: 0.0319s Zeit: 22:24:35.526061
+neue maximalzeit: 0.0320s Zeit: 22:24:35.826589
+neue maximalzeit: 0.0337s Zeit: 22:24:37.428920
+neue maximalzeit: 0.0342s Zeit: 22:24:42.635216
+neue maximalzeit: 0.0342s Zeit: 22:24:54.751654
+neue maximalzeit: 0.0390s Zeit: 22:24:55.552819
+neue maximalzeit: 0.0390s Zeit: 22:25:34.206901
+neue maximalzeit: 0.0391s Zeit: 22:26:07.051937
+neue maximalzeit: 0.0394s Zeit: 22:26:28.181606
+neue maximalzeit: 0.0399s Zeit: 22:29:49.576937
+neue maximalzeit: 0.0426s Zeit: 22:32:11.285811
+neue maximalzeit: 0.0490s Zeit: 22:33:00.271517
+neue maximalzeit: 0.0491s Zeit: 22:45:19.633240
+neue maximalzeit: 0.0492s Zeit: 22:48:24.582105
+neue maximalzeit: 0.0549s Zeit: 22:52:01.498909
+Keyboard interrupt received. Exiting...
