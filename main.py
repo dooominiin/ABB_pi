@@ -32,7 +32,7 @@ server = OpcUaServer_Monitoring(aktualisierungsintervall = 1)
 regler = Regler(dt = 0.1, server=server)
 
 # OPC-Client, verbunden mit Leitsystem, INPUT + OUTPUT
-client = OpcUaClient(dt = 0.01,regler = regler, output_update_intervall = 1)
+client = OpcUaClient(dt = 0.01,regler = regler, output_update_intervall = 3)
 
 client.loop_start()
 regler.loop_start()
