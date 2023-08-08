@@ -38,7 +38,7 @@ class OpcUaClient:
         self.zähler = 0                
         self.client = Client("opc.tcp://192.168.43.203:4842/freeopcua/server/")  # adresse lenovo handy hotspot
         self.terminate = False
-        self.running = True
+        self.running = False
         self.thread = Thread(target=self.loop_forever)
         zähler = 0
         while not self.terminate:
@@ -53,7 +53,6 @@ class OpcUaClient:
                     print(f"Abbruch nach {zähler} Versuchen!")
                     self.terminate = True
                     self.running = False
-
         if not self.terminate:
             # subscribing to a variable node
             self.handler = SubHandler()
@@ -114,12 +113,12 @@ class OpcUaClient:
 
     def loop_start(self):
         if not self.terminate:
+            self.running = True
             self.thread.start()
 
     def loop_forever(self):
         while not self.terminate:                       
             start_time = time.time()  # Startzeit speichern
-            #self.send()
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
   
