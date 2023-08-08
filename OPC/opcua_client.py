@@ -106,7 +106,13 @@ class OpcUaClient:
                 if var_info["is_output"]:
                     #print("update output",name,float(self.output[name]))
                     time_1=time.time()
-                    self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                    try:
+                        self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                    except Exception as e:
+                        print("Versuchte get_node()   {}".format(e))
+                        self.terminate = True
+
+
             t2 = time.time()
             #print("output wurde gesendet in {:.4f} s".format(t2-t1))
             self.am_senden = False
