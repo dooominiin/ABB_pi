@@ -1,19 +1,22 @@
 [
   {
+    "subscribe": true,
     "name": "s",
     "namespace": "ns=4",
     "string": "s=root//states",
     "type": "Float",
     "writable": false
   },
-  {
+   {
+    "subscribe": true,
     "name": "F",
     "namespace": "ns=4",
     "string": "s=root//states",
     "type": "Float",
     "writable": false
   },
-   {
+  {
+    "subscribe": true,
     "name": "F1",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -21,6 +24,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "F2",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -28,6 +32,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "F3",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -35,6 +40,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_D40",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -42,6 +48,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "TOELE",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -49,6 +56,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_T_1",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -56,6 +64,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_T_2",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -63,6 +72,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "f",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -70,6 +80,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "s_k",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -77,6 +88,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "s_k2",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -84,6 +96,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "k",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -91,6 +104,7 @@
     "writable": false
   },
    {
+    "subscribe": true,
     "name": "s_V",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -98,6 +112,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "s_V_K",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -105,6 +120,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "r_tilde",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -112,6 +128,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_BP1",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -119,6 +136,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_BP2",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -126,6 +144,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_WT1",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -133,6 +152,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_WT2",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -140,6 +160,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_V_tilde",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -147,6 +168,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_V",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -154,6 +176,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_V2",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -161,6 +184,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "m",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -168,6 +192,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "r_alt",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -175,6 +200,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "r",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -182,6 +208,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_tank",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -189,6 +216,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "T_kuehl",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -196,6 +224,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "güte_M",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -203,6 +232,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "güte_K",
     "namespace": "ns=4",
     "string": "s=root//states",
@@ -210,6 +240,7 @@
     "writable": false
   },
   {
+    "subscribe": true,
     "name": "güte_r",
     "namespace": "ns=4",
     "string": "s=root//states",
