@@ -109,8 +109,10 @@ class OpcUaClient:
                     try:
                         self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
                     except Exception as e:
+                        print("Versuchte get_node()   {}".format(e))
                         self.terminate = True
-                        print(e)
+
+
             t2 = time.time()
             #print("output wurde gesendet in {:.4f} s".format(t2-t1))
             self.am_senden = False
