@@ -12,7 +12,7 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
 os.chdir(script_dir)
-logging = True
+logging = False
 
 if logging:
     # Öffne eine Logdatei zum Schreiben
@@ -39,6 +39,15 @@ regler.loop_start()
 
 try:
     while client.is_running() or regler.is_running() or server.is_running():
+        if (not client.is_running()) or (not regler.is_running()) or (not server.is_running()):
+            print("Client: {}\tServer: {}\tRegler: {}".format(client.is_running(), regler.is_running(), server.is_running()))
+            try: 
+                regler.loop_stop()
+                client.loop_stop()
+                server.loop_stop()
+            except Exception as e:
+                print(e)
+            print("Client: {}\tServer: {}\tRegler: {}".format(client.is_running(), regler.is_running(), server.is_running()))
         time.sleep(0.1)
 
 except KeyboardInterrupt:

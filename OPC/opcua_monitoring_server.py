@@ -19,7 +19,7 @@ class OpcUaServer_Monitoring:    # create server object
         # set server name
         self.server.set_server_name("OPC Server Schmieroeltemperaturregler Monitoring")
         # set endpoint
-        self.server.set_endpoint("opc.tcp://0.0.0.0:4841/freeopcua/server/")
+        self.server.set_endpoint("opc.tcp://0.0.0.0:4842/freeopcua/server/")
         # setup our own namespace
         uri = "schmieroelregler_monitor"
         idx = self.server.register_namespace(uri)
