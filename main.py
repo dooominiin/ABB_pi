@@ -12,7 +12,7 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
 os.chdir(script_dir)
-logging = False
+logging = True
 
 if logging:
     # Öffne eine Logdatei zum Schreiben
