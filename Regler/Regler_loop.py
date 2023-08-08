@@ -85,7 +85,7 @@ class Regler:
                 self.maxtime = max(self.maxtime,elapsed_time)
                 print("neue maximalzeit: {:.4f}s Zeit: {}".format(self.maxtime, datetime.datetime.now().time()))
             #print("Regler: {:.4f}\tOPC Client: {:.4f}\tOPC Server: {:.4f}".format(time_regler-start_time,time_opc_client-time_regler, time_opc_server-time_opc_client))
-            print(Zustand(self.input["state"]),f"benötigte zeit: {elapsed_time*1000:3.2f} ms")
+            #print(Zustand(self.input["state"]),f"benötigte zeit: {elapsed_time*1000:3.2f} ms")
 
 
 

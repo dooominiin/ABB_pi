@@ -26,13 +26,13 @@ print("main.py gestartet")
 
 
 # OPC-Server zum überwachen des Reglers, enthält alle States des Reglers
-server = OpcUaServer_Monitoring(aktualisierungsintervall = 1)
+server = OpcUaServer_Monitoring(aktualisierungsintervall = 3)
 
 # Smithpredictor Regler Objekt, dt = Diskretisierungszeitschritt [s]
 regler = Regler(dt = 0.1, server=server)
 
 # OPC-Client, verbunden mit Leitsystem, INPUT + OUTPUT
-client = OpcUaClient(dt = 0.01,regler = regler, output_update_intervall = 3)
+client = OpcUaClient(dt = 0.01,regler = regler, output_update_intervall = 1)
 
 client.loop_start()
 regler.loop_start()
