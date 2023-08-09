@@ -1,7 +1,6 @@
 import time
 from threading import Thread
 import os, sys
-import matplotlib.pyplot as plt
 import numpy as np
 import h5py
 
@@ -19,7 +18,8 @@ class meinePlots():
         self.data_neu = Smithpredictor.states_dictionary()
         self.data_neu['time'] = 0
         self.data = Smithpredictor.states_dictionary_array()
-        self.data['time'] = np.array(time.time())
+        self.data['time'] = np.array(0)
+        self.start_time = time.time()
         self.loop_start()
         
     def set_new_Data(self,node,value):
@@ -39,7 +39,7 @@ class meinePlots():
                 time.sleep(self.delay)
                 
                 # Datenset erweitern
-                self.data_neu['time'] = time.time()
+                self.data_neu['time'] = time.time()-self.start_time
                 for key, new_value in zip(self.data.keys(), self.data_neu.values()):
                     self.data[key] = np.append(self.data[key],new_value)
                 self.neue_Daten = False
@@ -90,10 +90,6 @@ class meinePlots():
 
     def loop_stop(self):
         self.terminate = True
-        try:
-            plt.close('all')
-        except Exception as e:
-            print(e)    
         try:
             self.thread.join()
         except Exception as e:
