@@ -84,34 +84,7 @@ class OpcUaClient:
                 self.loop_start()
                 print("OPC_Client Thread gestartet!")
     
-    def set_output(self,output):
-        if not self.am_senden:
-            self.output = output
-
     
-    def send(self):
-        self.zähler += self.dt
-        if self.zähler >= self.output_update_intervall:
-            t1 = time.time()
-            with open("OPC/variablen_monitoring.json", "r", encoding='utf-8') as file:
-                variables = json.load(file)
-            self.am_senden = True
-            try:
-                for var_info in variables:
-                    name = var_info["name"]
-                    namespace = var_info["namespace"]
-                    string = var_info["string"]
-                    if var_info["is_output"]:
-                        #print("update output",name,float(self.output[name]))
-                        time_1=time.time()
-                        self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
-            except Exception as e:
-                print(e)
-                self.terminate = True
-            t2 = time.time()
-            #print("output wurde gesendet in {:.4f} s".format(t2-t1))
-            self.am_senden = False
-            self.zähler = 0
 
         
 
@@ -125,8 +98,12 @@ class OpcUaClient:
             start_time = time.time()  # Startzeit speichern
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
+            if not self.client.uaclient._uasocket._thread.is_alive():
+                print("is not alive")
+                self.terminate = True
             if self.terminate:
                 self.loop_stop()
+
 
     def loop_stop(self):
         self.terminate = True

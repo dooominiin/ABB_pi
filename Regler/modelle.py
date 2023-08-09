@@ -340,5 +340,5 @@ if __name__ == "__main__":
     
     
     l = LookupTable()
-    print(l.map_value(14))
+    print(l.map_value(np.linspace(0,1,10)))
 

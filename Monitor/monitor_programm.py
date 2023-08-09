@@ -17,7 +17,10 @@ if __name__ == "__main__":
         while True:
             time.sleep(0.1)
             if not c.is_running():
-                raise KeyboardInterrupt
+                raise 
+    
+    except Exception as e:
+        print(e)
     except KeyboardInterrupt:
         print("Keyboard interrupt received. Exiting...")
     finally:
