@@ -121,25 +121,27 @@ class OpcUaClient:
             start_time = time.time()  # Startzeit speichern
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-  
+            if self.terminate:
+                self.loop_stop()
+
     def loop_stop(self):
         self.terminate = True
         try:
             self.thread.join()
         except Exception as e:
             print(e)
-            pass    
+                
         try:
             if hasattr(self.client, 'subscription'):
                 self.client.subscription.delete()
         except Exception as e:
             print(e)
-            pass
+            
         try:    
             self.client.disconnect()
         except Exception as e:
             print(e)
-            pass
+            
         self.running = False
 
     def is_running(self):
