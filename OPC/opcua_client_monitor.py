@@ -96,14 +96,18 @@ class OpcUaClient:
             with open("OPC/variablen_monitoring.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
             self.am_senden = True
-            for var_info in variables:
-                name = var_info["name"]
-                namespace = var_info["namespace"]
-                string = var_info["string"]
-                if var_info["is_output"]:
-                    #print("update output",name,float(self.output[name]))
-                    time_1=time.time()
-                    self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+            try:
+                for var_info in variables:
+                    name = var_info["name"]
+                    namespace = var_info["namespace"]
+                    string = var_info["string"]
+                    if var_info["is_output"]:
+                        #print("update output",name,float(self.output[name]))
+                        time_1=time.time()
+                        self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+            except Exception as e:
+                print(e)
+                self.terminate = True
             t2 = time.time()
             #print("output wurde gesendet in {:.4f} s".format(t2-t1))
             self.am_senden = False
