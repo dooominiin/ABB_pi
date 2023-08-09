@@ -202,6 +202,7 @@ class Smithpredictor:
         
         # aktualisieren der States zum überwachen und testen des reglers
         self.states_monitoring.update({
+                's' : s,
                 'F' : F,
                 'F1': self.F1,
                 'F2': self.F2,
