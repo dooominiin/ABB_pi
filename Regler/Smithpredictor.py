@@ -125,7 +125,7 @@ class Smithpredictor:
         self.TOELE = np.array([min(120, max(20, input["TOELE"]))])
 
         ##########  regelstrecke (deaktivieren für implementierung auf Teststand) ##############################################
-        if False:
+        if True:
             [F1, F2, F3] = F_nach_r.update(F=F, r=self.r)
             T1 = self.rohr1_anlage.update(F=F2, input= T_tank)
             T2 = self.tot1_anlage.update(F=F2, input=T1, dt=self.dt)
