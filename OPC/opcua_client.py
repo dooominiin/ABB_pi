@@ -130,7 +130,9 @@ class OpcUaClient:
             self.send()
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
-  
+            if self.terminate:
+                self.loop_stop()
+                
     def loop_stop(self):
         self.terminate = True
         try:

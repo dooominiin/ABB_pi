@@ -2,7 +2,7 @@ clear
 close all
 k=0;
 
-maxlaenge = 100;
+maxlaenge = 1000;
 
 dicke = 2;
 fig1 = figure(1);
@@ -22,14 +22,14 @@ while true
         table_aktualisiert = true;
         try
             info = h5info(file,'/');
-            size = info.Groups.Datasets(1).Dataspace.Size;
-            count = min([size, maxlaenge]);
-            start = size-count+1;
+            len = info.Groups.Datasets(1).Dataspace.Size;  
+            len = min([len, laxlaenge])-1;
+            
             temp = table();
             for i = 1:length(info.Groups.Datasets)
                 name = info.Groups.Datasets(i).Name;
                 path = '/States/' + string(name);
-                temp = addvars(temp, h5read(file,path,start,count), 'NewVariableNames', name);
+                temp = addvars(temp, h5read(file,path), 'NewVariableNames', name);
             end
         catch exception
             fprintf('Ein Fehler ist aufgetreten: %s\n', exception.message);
