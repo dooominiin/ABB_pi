@@ -6,7 +6,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 60
   },
   {
     "name": "T_tank",
@@ -15,7 +16,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 90
   },
   {
     "name": "T_kuehl",
@@ -24,7 +26,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 20
   },
   {
     "name": "r_ist",
@@ -33,7 +36,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 0.5
   },
   {
     "name": "F",
@@ -42,7 +46,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 0.001
   },
   {
     "name": "r_soll",
@@ -51,7 +56,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": false,
-    "is_output": true
+    "is_output": true,
+    "init_value": 0.5
   },
   {
     "name": "TOELE",
@@ -60,7 +66,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 40
   },
   {
     "name": "s",
@@ -69,7 +76,8 @@
     "writable": true,
     "type": "Float",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 75
   },
   {
     "name": "state",
@@ -78,6 +86,7 @@
     "writable": true,
     "type": "Int32",
     "subscribe": true,
-    "is_output": false
+    "is_output": false,
+    "init_value": 2
   }
 ]

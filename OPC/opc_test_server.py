@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 var = device.add_variable(node_id, name, ua.Variant(0, ua.VariantType.Int32))
             print(var)
             var.set_modelling_rule(True)
-            var.set_value(0)
+            var.set_value(var_info["init_value"])
             var.set_writable(writable=var_info["writable"])
 
     
