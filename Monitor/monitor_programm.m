@@ -15,7 +15,7 @@ while true
     kk = dir(file).datenum;
     ist_neu = k ~= kk;
     k=kk;
-    if ist_neu == ist_neu
+    if ist_neu
         disp("ist neu")
         tic
         table_aktualisiert = true;
@@ -124,7 +124,7 @@ while true
     
             
         toc
-        pause(1)
+        pause(0.01)
         
     end
 end
