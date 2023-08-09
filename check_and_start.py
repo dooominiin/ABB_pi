@@ -51,4 +51,4 @@ if __name__ == "__main__":
     
     process_name = "/home/mister/Desktop/ABB_Projekt/main.py"
     #stop_process(process_name)
-    start_process(process_name)
+    #start_process(process_name)

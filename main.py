@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 
 import sys
+from OPC.opcua_client import OpcUaClient
+from OPC.opcua_monitoring_server import OpcUaServer_Monitoring
+from Regler.Regler_loop import Regler
+import time
+import os
+import datetime
+
 loggen = True
 if loggen:
     
@@ -10,12 +17,6 @@ if loggen:
     sys.stdout = log_datei
     # Umlenken der Standardfehlerausgabe (stderr) auf die Logdatei
     sys.stderr = log_datei
-from OPC.opcua_client import OpcUaClient
-from OPC.opcua_monitoring_server import OpcUaServer_Monitoring
-from Regler.Regler_loop import Regler
-import time
-import os
-
 
 
 # Ermittle den Pfad zum Verzeichnis des Skripts
@@ -27,7 +28,7 @@ print("main.py gestartet")
 
 
 # OPC-Server zum überwachen des Reglers, enthält alle States des Reglers
-server = OpcUaServer_Monitoring(aktualisierungsintervall = 3)
+server = OpcUaServer_Monitoring(aktualisierungsintervall = 1)
 
 # Smithpredictor Regler Objekt, dt = Diskretisierungszeitschritt [s]
 regler = Regler(dt = 0.1, server=server)
@@ -57,4 +58,5 @@ finally:
     regler.loop_stop()
     client.loop_stop()
     server.loop_stop()
+    print("gestopt :{}".format(datetime.datetime.now().time()))
     if loggen: log_datei.close()
