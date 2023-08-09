@@ -2,13 +2,12 @@ clear
 close all
 k=0;
 
-maxlaenge = 100;
+maxlaenge = 600;
 
 dicke = 2;
 fig1 = figure(1);
 fig2 = figure(2);
 fig3 = figure(3);
-
 
 while true
     

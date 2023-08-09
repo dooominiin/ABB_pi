@@ -58,9 +58,11 @@ class meinePlots():
                             try:
                                 group.create_dataset(key,data=value)
                             except Exception as e:
+                                raise
                                 print("fehler bei create_dataset:  {}".format(e))
                 except Exception as e:
                     print(e)
+                    raise
                 finally:
                     t2 = time.time()
                     print("Benötigte Zeit zum Speichern des Datensets mit der Grösse {} : {:.4f}s".format(len(self.data['F']),t2-t1))
