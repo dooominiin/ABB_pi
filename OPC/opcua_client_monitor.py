@@ -156,6 +156,8 @@ if __name__ == "__main__":
     try:
         while True:
             time.sleep(0.1)
+    except Exception as e:
+        print(e)
     except KeyboardInterrupt:
         print("Keyboard interrupt received. Exiting...")
     finally:
