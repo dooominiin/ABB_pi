@@ -1,6 +1,15 @@
 #!/usr/bin/python3
 
 import sys
+loggen = True
+if loggen:
+    
+    # Öffne eine Logdatei zum Schreiben
+    log_datei = open('main.log', 'a')
+    # Umlenken der Standardausgabe (stdout) auf die Logdatei
+    sys.stdout = log_datei
+    # Umlenken der Standardfehlerausgabe (stderr) auf die Logdatei
+    sys.stderr = log_datei
 from OPC.opcua_client import OpcUaClient
 from OPC.opcua_monitoring_server import OpcUaServer_Monitoring
 from Regler.Regler_loop import Regler
@@ -8,19 +17,11 @@ import time
 import os
 
 
+
 # Ermittle den Pfad zum Verzeichnis des Skripts
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Setze das Arbeitsverzeichnis auf das Verzeichnis des Skripts
 os.chdir(script_dir)
-logging = True
-
-if logging:
-    # Öffne eine Logdatei zum Schreiben
-    log_datei = open('main.log', 'a')
-    # Umlenken der Standardausgabe (stdout) auf die Logdatei
-    sys.stdout = log_datei
-    # Umlenken der Standardfehlerausgabe (stderr) auf die Logdatei
-    sys.stderr = log_datei
 
 print("main.py gestartet")
 
@@ -50,10 +51,10 @@ try:
             print("Client: {}\tServer: {}\tRegler: {}".format(client.is_running(), regler.is_running(), server.is_running()))
         time.sleep(0.1)
 
-except KeyboardInterrupt:
+except :#KeyboardInterrupt:
     print("Keyboard interrupt received. Exiting...")
 finally:
     regler.loop_stop()
     client.loop_stop()
     server.loop_stop()
-    if logging: log_datei.close()
+    if loggen: log_datei.close()
