@@ -78,6 +78,16 @@
     "subscribe": true,
     "is_output": false,
     "init_value": 75
+  }, 
+  {
+    "name": "s_switch_state",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//s",
+    "writable": true,
+    "type": "Float",
+    "subscribe": false,
+    "is_output": false,
+    "init_value": 75
   },
   {
     "name": "state",
