@@ -107,7 +107,7 @@ while true
         
         legend({'T_T_2','TOELE','differenz'},'Location','northwest')
         
-        title('Totzeiten '+ string(p.time(end))+'s')
+        title('Totzeiten ['+ string(p.time(end))+']s')
         grid on
         
         
@@ -122,7 +122,12 @@ while true
         legend({'T_V_tilde','T_D40','differenz'},'Location','northwest')
         grid on
     
-    
+        
+        
+        
+
+
+       
         drawnow
     
             
