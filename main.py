@@ -38,7 +38,7 @@ client = OpcUaClient(dt = 0.01,regler = regler, output_update_intervall = 1)
 
 client.loop_start()
 regler.loop_start()
-
+ 
 try:
     while client.is_running() or regler.is_running() or server.is_running():
         if (not client.is_running()) or (not regler.is_running()) or (not server.is_running()):
