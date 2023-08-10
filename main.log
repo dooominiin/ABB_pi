@@ -11,136 +11,209 @@ subscribed to:  F
 subscribed to:  TOELE
 subscribed to:  s
 subscribed to:  state
-neue maximalzeit: 0.0268s Zeit: 20:01:40.388487
-neue maximalzeit: 0.0293s Zeit: 20:01:40.488693
-neue maximalzeit: 0.0306s Zeit: 20:01:40.789097
-neue maximalzeit: 0.0321s Zeit: 20:01:40.821304
-neue maximalzeit: 0.0348s Zeit: 20:01:40.888205
-neue maximalzeit: 0.0357s Zeit: 20:01:42.204737
-neue maximalzeit: 0.0361s Zeit: 20:01:42.382425
-neue maximalzeit: 0.0376s Zeit: 20:01:42.456652
-neue maximalzeit: 0.0385s Zeit: 20:01:42.601965
-neue maximalzeit: 0.0391s Zeit: 20:01:42.641172
-neue maximalzeit: 0.0402s Zeit: 20:01:43.506950
-neue maximalzeit: 0.0409s Zeit: 20:01:45.903986
-neue maximalzeit: 0.0415s Zeit: 20:01:46.554710
-neue maximalzeit: 0.0465s Zeit: 20:01:49.030807
-neue maximalzeit: 0.0570s Zeit: 20:01:57.225951
-Versuchte get_node()   
+neue maximalzeit: 0.0292s Zeit: 15:12:12.316013
+neue maximalzeit: 0.0295s Zeit: 15:12:12.416185
+neue maximalzeit: 0.0297s Zeit: 15:12:12.516343
+neue maximalzeit: 0.0304s Zeit: 15:12:12.616505
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+Exception calling data change handler
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 337, in from_string
+    return NodeId._from_string(string)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 352, in _from_string
+    k, v = el.split("=", 1)
+ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/subscription.py", line 153, in _call_datachange
+    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+  File "/home/mister/Desktop/ABB_Projekt/OPC/opcua_client.py", line 26, in datachange_notification
+    self.regler.set_input(val,node) # neue daten zum regler schicken
+  File "/home/mister/Desktop/ABB_Projekt/Regler/Regler_loop.py", line 47, in set_input
+    if node == self.client.client.get_node(f"{namespace};state"):
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/client/client.py", line 538, in get_node
+    return Node(self.uaclient, nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/common/node.py", line 49, in __init__
+    self.nodeid = ua.NodeId.from_string(nodeid)
+  File "/home/mister/.local/lib/python3.9/site-packages/opcua/ua/uatypes.py", line 339, in from_string
+    raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+opcua.ua.uaerrors._base.UaStringParsingError: ('Error parsing string ns=5;state', ValueError('not enough values to unpack (expected 2, got 1)'))
+neue maximalzeit: 0.0330s Zeit: 15:12:12.716664
+neue maximalzeit: 0.0350s Zeit: 15:12:12.816834
+neue maximalzeit: 0.0374s Zeit: 15:12:13.717858
+neue maximalzeit: 0.0384s Zeit: 15:12:13.818030
+neue maximalzeit: 0.0394s Zeit: 15:12:14.218490
+Keyboard interrupt received. Exiting...
+neue maximalzeit: 0.0396s Zeit: 15:12:17.121578
 cannot join current thread
-[Errno 32] Broken pipe
-Client: False	Server: True	Regler: True
 close_secure_channel() failed: socket already closed
-Client: False	Server: False	Regler: False
-close_secure_channel() failed: socket already closed
-gestopt :20:02:03.053814
-main.py gestartet
-Endpoints other than open requested but private key and certificate are not set.
-Listening on 0.0.0.0:4842
-Starten des OPC-Monitoring Servers erfolgreich
-Verbindung zum OPC Server erfolgreich
-subscribed to:  T_D40
-subscribed to:  T_tank
-subscribed to:  T_kuehl
-subscribed to:  r_ist
-subscribed to:  F
-subscribed to:  TOELE
-subscribed to:  s
-subscribed to:  state
-neue maximalzeit: 0.0321s Zeit: 20:04:14.919042
-neue maximalzeit: 0.0330s Zeit: 20:04:15.222679
-neue maximalzeit: 0.0337s Zeit: 20:04:15.356564
-neue maximalzeit: 0.0361s Zeit: 20:04:15.847309
-neue maximalzeit: 0.0373s Zeit: 20:04:15.884735
-neue maximalzeit: 0.0381s Zeit: 20:04:17.243434
-neue maximalzeit: 0.0406s Zeit: 20:04:17.284152
-neue maximalzeit: 0.0443s Zeit: 20:04:20.736697
-neue maximalzeit: 0.0443s Zeit: 20:04:21.096529
-neue maximalzeit: 0.0602s Zeit: 20:04:24.131527
-neue maximalzeit: 0.0685s Zeit: 20:04:39.231844
-Versuchte get_node()   
-cannot join current thread
-[Errno 32] Broken pipe
-Client: False	Server: True	Regler: True
-close_secure_channel() failed: socket already closed
-Client: False	Server: False	Regler: False
-close_secure_channel() failed: socket already closed
-gestopt :20:04:56.042781
-main.py gestartet
-Endpoints other than open requested but private key and certificate are not set.
-Listening on 0.0.0.0:4842
-Starten des OPC-Monitoring Servers erfolgreich
-Verbindung zum OPC Server erfolgreich
-subscribed to:  T_D40
-subscribed to:  T_tank
-subscribed to:  T_kuehl
-subscribed to:  r_ist
-subscribed to:  F
-subscribed to:  TOELE
-subscribed to:  s
-subscribed to:  state
-neue maximalzeit: 0.0278s Zeit: 20:05:26.027725
-neue maximalzeit: 0.0282s Zeit: 20:05:26.127919
-neue maximalzeit: 0.0283s Zeit: 20:05:26.228106
-neue maximalzeit: 0.0355s Zeit: 20:05:26.428388
-neue maximalzeit: 0.0371s Zeit: 20:05:26.465543
-neue maximalzeit: 0.0373s Zeit: 20:05:26.537914
-neue maximalzeit: 0.0389s Zeit: 20:05:26.576905
-neue maximalzeit: 0.0390s Zeit: 20:05:26.767161
-neue maximalzeit: 0.0406s Zeit: 20:05:28.083311
-neue maximalzeit: 0.0430s Zeit: 20:05:28.126429
-neue maximalzeit: 0.0435s Zeit: 20:05:33.127155
-neue maximalzeit: 0.0443s Zeit: 20:05:41.576630
-neue maximalzeit: 0.0543s Zeit: 20:05:44.627020
-neue maximalzeit: 0.0547s Zeit: 20:06:14.726168
-neue maximalzeit: 0.0591s Zeit: 20:06:19.860923
-neue maximalzeit: 0.0598s Zeit: 20:07:20.244682
-neue maximalzeit: 0.0639s Zeit: 20:07:30.322341
-neue maximalzeit: 0.0676s Zeit: 20:07:50.653696
-neue maximalzeit: 0.0692s Zeit: 20:08:40.929725
-neue maximalzeit: 0.0745s Zeit: 20:09:46.368730
-Versuchte get_node()   
-cannot join current thread
-[Errno 32] Broken pipe
-Client: False	Server: True	Regler: True
-close_secure_channel() failed: socket already closed
-Client: False	Server: False	Regler: False
-close_secure_channel() failed: socket already closed
-gestopt :20:11:40.135557
-main.py gestartet
-Endpoints other than open requested but private key and certificate are not set.
-Listening on 0.0.0.0:4842
-Starten des OPC-Monitoring Servers erfolgreich
-Verbindung zum OPC Server erfolgreich
-subscribed to:  T_D40
-subscribed to:  T_tank
-subscribed to:  T_kuehl
-subscribed to:  r_ist
-subscribed to:  F
-subscribed to:  TOELE
-subscribed to:  s
-subscribed to:  state
-neue maximalzeit: 0.0275s Zeit: 20:13:40.883952
-neue maximalzeit: 0.0314s Zeit: 20:13:40.984145
-neue maximalzeit: 0.0359s Zeit: 20:13:41.284576
-neue maximalzeit: 0.0360s Zeit: 20:13:42.314637
-neue maximalzeit: 0.0362s Zeit: 20:13:42.787251
-neue maximalzeit: 0.0363s Zeit: 20:13:42.823674
-neue maximalzeit: 0.0365s Zeit: 20:13:42.860267
-neue maximalzeit: 0.0366s Zeit: 20:13:43.041973
-neue maximalzeit: 0.0376s Zeit: 20:13:43.079656
-neue maximalzeit: 0.0390s Zeit: 20:13:43.118722
-neue maximalzeit: 0.0391s Zeit: 20:13:43.157900
-neue maximalzeit: 0.0518s Zeit: 20:13:44.876131
-neue maximalzeit: 0.0650s Zeit: 20:13:47.237265
-Versuchte get_node()   
-cannot join current thread
-[Errno 32] Broken pipe
-Client: False	Server: True	Regler: True
-close_secure_channel() failed: socket already closed
-Client: False	Server: False	Regler: False
-close_secure_channel() failed: socket already closed
-gestopt :20:14:50.956924
-main.py gestartet
-Endpoints other than open requested but private key and certificate are not set.
-Listening on 0.0.0.0:4842
+gestopt :15:12:17.137569

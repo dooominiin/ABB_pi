@@ -43,8 +43,17 @@ class Regler:
                 string = var_info["string"]
                 if node == self.client.client.get_node(f"{namespace};{string}"):
                     self.input[name] = input
-                    #print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
-
+                    print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
+                    if name == "state":
+                        try:
+                            var = variables["s"]
+                            string = var["string"]
+                            namespace = var["namespace"]
+                            node = self.client.client.get_node(f"{namespace};{string}")
+                            self.input["s"] = node.get_value()
+                            print("s aktualisiert nach state wechsel")
+                        except:
+                            raise
 
        
     def loop_start(self):
@@ -61,12 +70,12 @@ class Regler:
         while not self.terminate:
             start_time = time.time()  # Startzeit speichern
             ######################## Regler ########################
-            if Zustand.geregelter_Betrieb == Zustand(self.input["state"]):
-                self.dt = self.dt_alt
-                self.output = self.Smithpredictor.update(self.input)
             if Zustand.manueller_Betrieb == Zustand(self.input["state"]):
                 self.dt = self.dt_alt
                 self.input["s"] = self.input["TOELE"]
+                self.output = self.Smithpredictor.update(self.input)
+            if Zustand.geregelter_Betrieb == Zustand(self.input["state"]):
+                self.dt = self.dt_alt
                 self.output = self.Smithpredictor.update(self.input)
             if Zustand.beschleunigt == Zustand(self.input["state"]):
                 self.dt = 0   
