@@ -37,6 +37,10 @@ class OpcUaClient:
         self.am_senden = False
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
         self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
+        self.client.timeout = 10  # Setze den Standard-Timeout auf 10 Sekunden
+        self.client.uarequest_timeout = 5  # Setze den Timeout für UA-Anfragen auf 5 Sekunden
+
+        
         self.terminate = False
         self.running = True
         zähler = 0

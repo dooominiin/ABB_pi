@@ -44,16 +44,10 @@ class Regler:
                 if node == self.client.client.get_node(f"{namespace};{string}"):
                     self.input[name] = input
                     print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
-                    if name == "state":
-                        try:
-                            var = variables["s"]
-                            string = var["string"]
-                            namespace = var["namespace"]
-                            node = self.client.client.get_node(f"{namespace};{string}")
-                            self.input["s"] = node.get_value()
-                            print("s aktualisiert nach state wechsel")
-                        except:
-                            raise
+                    if name == "s":
+                        self.input["s_switch_state"] = input
+
+                        
 
        
     def loop_start(self):
@@ -76,9 +70,11 @@ class Regler:
                 self.output = self.Smithpredictor.update(self.input)
             if Zustand.geregelter_Betrieb == Zustand(self.input["state"]):
                 self.dt = self.dt_alt
+                self.input["s"] = self.input["s_switch_state"]
                 self.output = self.Smithpredictor.update(self.input)
             if Zustand.beschleunigt == Zustand(self.input["state"]):
                 self.dt = 0   
+                self.input["s"] = self.input["s_switch_state"]
                 self.output = self.Smithpredictor.update(self.input)
             time_regler = time.time()
             ##################### Regler fertig, opc variablen update Leitsystem ####################
