@@ -45,15 +45,19 @@ class Regler:
                     self.input[name] = input
                     print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
                     if name == "state":
-                        try:
-                            var = variables["s"]
-                            string = var["string"]
-                            namespace = var["namespace"]
-                            node = self.client.client.get_node(f"{namespace};{string}")
-                            self.input["s"] = node.get_value()
-                            print("s aktualisiert nach state wechsel")
-                        except:
-                            raise
+                        for var_info in variables:
+                            name = var_info["name"]
+                            namespace = var_info["namespace"]
+                            string = var_info["string"]
+                            if name == "s":
+                                node = self.client.client.get_node(f"{namespace};{string}")
+                                print(node)
+                                print(node.get_data_value())
+
+                                s = node.get_value()
+                                #self.input["s"] = s 
+                                print("s aktualisiert nach state wechsel")
+                        
 
        
     def loop_start(self):
