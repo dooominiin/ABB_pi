@@ -82,7 +82,7 @@
   {
     "name": "s_switch_state",
     "namespace": "ns=5",
-    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//s",
+    "string": "s=Root//Control Network//TLP//Applications//Mönch//Control Modules//Mönch//Schmierölsystem//ss",
     "writable": true,
     "type": "Float",
     "subscribe": false,
