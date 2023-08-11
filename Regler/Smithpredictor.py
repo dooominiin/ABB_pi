@@ -166,7 +166,8 @@ class Smithpredictor:
         r_tilde = self.V_K_regler.update(fehler= s_V_K)
         
         ##########  V~  ######################################################
-        [self.F1, self.F2, self.F3] = F_nach_r.update(F=F, r=r_tilde)
+        r_nach_kennlinie = self.lookup.map_value(r_tilde)
+        [self.F1, self.F2, self.F3] = F_nach_r.update(F=F, r=r_nach_kennlinie)
         T_BP1 = self.rohr1.update(F=self.F2, input=T_tank)
         T_BP2 = self.tot1.update(F=self.F2, input=T_BP1, dt=self.dt)
         T_WT1 = self.wt.update(F=self.F3, T_tank=T_tank, T_kuehl=T_kuehl)

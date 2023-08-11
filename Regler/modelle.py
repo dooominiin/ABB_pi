@@ -303,7 +303,11 @@ class LookupTable:
         self.values = np.array([0	,0.400799732573815	,0.619636162348070	,0.744447185364894,	0.811554345050153,	0.859176897591362,	0.900500448644506	,0.938703450255423,	0.974730918438370,	1.00620288454483,	1.03073937992630])
     
     def map_value(self, value):
+        value = max(0,value)
+        value = min(1,value)
         mapped_value = np.interp(value, self.keys, self.values)
+        mapped_value = max(0,mapped_value)
+        mapped_value = min(1,mapped_value)
         return mapped_value
 
 class Mittelwertfilter:
@@ -340,5 +344,7 @@ if __name__ == "__main__":
     
     
     l = LookupTable()
-    print(l.map_value(np.linspace(0,1,10)))
+    b= np.linspace(0,1,11)
+    for a in b:
+        print(l.map_value(a))
 
