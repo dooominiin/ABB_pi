@@ -2,6 +2,7 @@ from threading import Thread
 import time
 from opcua import Client, ua
 import json
+import logging
 
 # Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt 
 # INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public 
@@ -22,7 +23,7 @@ class SubHandler(object):
         self.regler = regler
 
     def datachange_notification(self, node, val, data):
-        #print("Python: New data change event", node, val)
+        print("Python: New data change event", node, val)
         self.regler.set_input(val,node) # neue daten zum regler schicken
 
     def event_notification(self, event):
@@ -36,7 +37,11 @@ class OpcUaClient:
         self.zähler = 0                
         self.am_senden = False
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
+        self.client = Client("opc.tcp://172.16.4.150:48050/") # UA gateway
+        self.client = Client("opcda://172.16.4.21/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
+        self.client = Client("opcda://PRIOPC1/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
         self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
+        
         self.client.timeout = 10  # Setze den Standard-Timeout auf 10 Sekunden
         self.client.uarequest_timeout = 5  # Setze den Timeout für UA-Anfragen auf 5 Sekunden
 
@@ -49,8 +54,9 @@ class OpcUaClient:
                 self.client.connect()
                 print("Verbindung zum OPC Server erfolgreich")
                 break
-            except:
+            except Exception as e:
                 print(f"Verbindung zum OPC Server nicht möglich! {zähler+1}er Versuch!")
+                print(e)
                 zähler += 1
                 if zähler >= 5:
                     print(f"Abbruch nach {zähler} Versuchen!")
@@ -87,7 +93,7 @@ class OpcUaClient:
                             print("subscribed to: ",name)
 
             except Exception as e:
-                print("subscribe der Variabeln nicht möglich!")
+                print("subscribe der Variabel {} nicht möglich!".format(name))
                 print(e)
                 self.terminate = True
 
@@ -111,7 +117,16 @@ class OpcUaClient:
                     #print("update output",name,float(self.output[name]))
                     time_1=time.time()
                     try:
-                        self.client.get_node(f"{namespace};{string}").set_value(float(self.output[name]))
+                        my_node = self.client.get_node(f"{namespace};{string}")
+                        print("get_node() gelungen mit :{}".format(my_node))
+                        var = my_node.get_data_value()
+                        print(var)
+                        my_node.set_data_value(var)
+                        print("juhuiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+
+
+                        my_node.set_value(float(self.output[name]))
+                        print("set_value() gelungen mit :{}".format(my_node))
                     except Exception as e:
                         print("Versuchte get_node()   {}".format(e))
                         self.terminate = True
