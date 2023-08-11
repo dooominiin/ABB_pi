@@ -81,7 +81,7 @@ class OpcUaServer_Monitoring:    # create server object
                 var = self.server.get_node(f"{namespace};{string}")
                 value = self.states[name]
                 if var_info["type"]== "Float":
-                    value = ua.Variant([value], ua.VariantType.Float)
+                    value = ua.Variant(value, ua.VariantType.Float)
                 var.set_value((value))
             #print("Monitoring States wurden in {:.4f}s aktualisiert.  {}".format(time.time()-t1),datetime.now().time())
             self.is_free = True
