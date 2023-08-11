@@ -82,7 +82,7 @@
   {
     "name": "s_switch_state",
     "namespace": "ns=5",
-    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//M_TOELE:vSp",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//M_TOELE:vS",
     "writable": true,
     "type": "Float",
     "subscribe": false,
