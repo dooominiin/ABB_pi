@@ -37,9 +37,9 @@ class OpcUaClient:
         self.zähler = 0                
         self.am_senden = False
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
-        self.client = Client("opc.tcp://172.16.4.150:48050/") # UA gateway
         self.client = Client("opcda://172.16.4.21/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
         self.client = Client("opcda://PRIOPC1/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
+        self.client = Client("opc.tcp://172.16.4.150:48050/") # UA gateway
         self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
         
         self.client.timeout = 10  # Setze den Standard-Timeout auf 10 Sekunden
