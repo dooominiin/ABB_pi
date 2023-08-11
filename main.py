@@ -8,7 +8,7 @@ import time
 import os
 import datetime
 
-loggen = True
+loggen = False
 if loggen:
     
     # Öffne eine Logdatei zum Schreiben
