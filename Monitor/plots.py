@@ -9,7 +9,7 @@ parent_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(parent_directory)
 from Regler.Smithpredictor import Smithpredictor
 
-class meinePlots():
+class meinePlots(): 
     def __init__(self):
         self.neue_Daten = False
         self.delay = 0.2
