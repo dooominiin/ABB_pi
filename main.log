@@ -1,0 +1,18 @@
+main.py gestartet
+Endpoints other than open requested but private key and certificate are not set.
+Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server nicht möglich! 1er Versuch!
+Verbindung zum OPC Server nicht möglich! 2er Versuch!
+Verbindung zum OPC Server nicht möglich! 3er Versuch!
+Verbindung zum OPC Server nicht möglich! 4er Versuch!
+Verbindung zum OPC Server nicht möglich! 5er Versuch!
+Abbruch nach 5 Versuchen!
+Regler gestoppt durch Client
+Client: False	Server: False	Regler: True
+cannot join thread before it is started
+'NoneType' object has no attribute 'socket'
+Client: False	Server: False	Regler: False
+cannot join thread before it is started
+'NoneType' object has no attribute 'socket'
+gestopt :09:03:21.329342
