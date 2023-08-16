@@ -2,7 +2,7 @@ clear
 close all
 k=0;
 
-maxlaenge = 600;
+maxlaenge = 180;
 
 dicke = 2;
 fig1 = figure(1);
