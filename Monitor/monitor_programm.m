@@ -16,7 +16,7 @@ while true
     ist_neu = k ~= kk;
     k=kk;
     if ist_neu
-        disp("ist neu")
+        %disp("ist neu")
         tic
         table_aktualisiert = true;
         try

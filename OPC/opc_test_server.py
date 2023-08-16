@@ -95,6 +95,10 @@ if __name__ == "__main__":
         try:
             print("Press Ctrl-C to stop.")
             while True:
+                #s = "ns=5;s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//M_D50:IO.In.Value"
+                #n = server.get_node(s)
+                #print(n.get_value())
+
                 time.sleep(0.1)
 
         except KeyboardInterrupt:
