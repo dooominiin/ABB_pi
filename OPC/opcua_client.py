@@ -23,11 +23,12 @@ class SubHandler(object):
         self.regler = regler
 
     def datachange_notification(self, node, val, data):
-        print("Python: New data change event", node, val)
+        #print("Python: New data change event", node, val)
         self.regler.set_input(val,node) # neue daten zum regler schicken
 
     def event_notification(self, event):
-        print("Python: New event", event)
+       #print("Python: New event", event)
+       pass
 
 
 
@@ -41,7 +42,10 @@ class OpcUaClient:
         self.client = Client("opcda://PRIOPC1/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
         self.client = Client("opc.tcp://172.16.4.150:48050/") # UA gateway
         self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
+        self.client = Client("opc.tcp://192.168.43.6:4840/freeopcua/server/")  # adresse PC handy hotspot
         
+
+
         self.client.timeout = 10  # Setze den Standard-Timeout auf 10 Sekunden
         self.client.uarequest_timeout = 5  # Setze den Timeout für UA-Anfragen auf 5 Sekunden
 
@@ -56,7 +60,7 @@ class OpcUaClient:
                 break
             except Exception as e:
                 print(f"Verbindung zum OPC Server nicht möglich! {zähler+1}er Versuch!")
-                print(e)
+               #print(e)
                 zähler += 1
                 if zähler >= 5:
                     print(f"Abbruch nach {zähler} Versuchen!")
@@ -117,20 +121,26 @@ class OpcUaClient:
                     #print("update output",name,float(self.output[name]))
                     time_1=time.time()
                     try:
-                        my_node = self.client.get_node(f"{namespace};{string}")
-                        print("get_node() gelungen mit :{}".format(my_node))
-                        var = my_node.get_data_value()
-                        print(var)
-                        my_node.set_data_value(var)
-                        print("juhuiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-
-
-                        my_node.set_value(float(self.output[name]))
-                        print("set_value() gelungen mit :{}".format(my_node))
-                    except Exception as e:
-                        print("Versuchte get_node()   {}".format(e))
-                        self.terminate = True
-
+                        try:
+                            my_node = self.client.get_node(f"{namespace};{string}")
+                            #print("get_node() gelungen mit :{}".format(my_node))
+                        except Exception as e:
+                            print("Versuchte get_node() mit {}".format(string))
+                            print(e)
+                            self.terminate = True
+                            raise
+                        try:
+                            #var = my_node.get_data_value()
+                            #my_node.set_data_value(var)
+                            my_node.set_value(float(self.output[name]))
+                            #print("set_value() gelungen mit :{}".format(my_node))
+                        except Exception as e:
+                            print("Versuchte set_value() mit {}".format(my_node))
+                            print(e)
+                            self.terminate = True
+                            raise
+                    except:
+                        pass
 
             t2 = time.time()
             #print("output wurde gesendet in {:.4f} s".format(t2-t1))
@@ -138,19 +148,19 @@ class OpcUaClient:
             self.zähler = 0
 
         
-
     def loop_start(self):
         if not self.terminate:
             self.thread.start()
 
     def loop_forever(self):
-        while not self.terminate:                       
+        while True:                       
             start_time = time.time()  # Startzeit speichern
             self.send()
             elapsed_time = time.time() - start_time  # Zeit seit Start speichern
             time.sleep(max(0, self.dt - elapsed_time))  # Schlafzeit berechnen und warten
             if self.terminate:
                 self.loop_stop()
+                break
 
     def loop_stop(self):
         self.terminate = True

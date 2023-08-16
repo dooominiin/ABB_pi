@@ -1,2 +1,0 @@
-2023-08-11 11:44:38,374 - INFO - opening connection
-2023-08-11 11:47:30,433 - INFO - opening connection

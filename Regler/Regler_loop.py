@@ -46,7 +46,7 @@ class Regler:
                     print(f"Variabel {name} aktualisiert mit dem Wert: {input}")
                     if name == "s":
                         self.input["s_switch_state"] = input
-
+                        print(f"Variabel s_switch_state aktualisiert mit dem Wert: {input}")
                         
 
        
@@ -63,6 +63,7 @@ class Regler:
 
         while not self.terminate:
             start_time = time.time()  # Startzeit speichern
+            self.input["state"] = Zustand.geregelter_Betrieb # überschreibt den state wenn der Server diesen nicht liefern soll!
             ######################## Regler ########################
             if Zustand.manueller_Betrieb == Zustand(self.input["state"]):
                 self.dt = self.dt_alt
