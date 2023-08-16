@@ -1,7 +1,7 @@
 from threading import Thread
 import time
 from opcua import Server
-#fdsgbfdgf
+#fdsgbfdgf 
 class OpcUaServer:
     def __init__(self, dt, regler):
         self.server = Server()
