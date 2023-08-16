@@ -13,3 +13,4 @@ logging.basicConfig(filename=log_file, level=logging.DEBUG,
 c = OpenOPC.client("opc.tcp.172.16.4.150.48050")
 print(c.servers())
 
+#test
