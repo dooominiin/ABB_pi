@@ -117,7 +117,10 @@ class Smithpredictor:
 
     def update(self, input):
         self.zähler += self.dt
-        F  = np.array([min(0.003, max(0.0001, input["F"]))])
+        F_l_min = input["F"]
+        F_m_s = F_l_min/60/1000
+        F  = np.array([min(0.003, max(0.00002, F_m_s))])
+
         s = np.array([min(120, max(20,input['s']))])
         T_tank = np.array([min(120, max(20, input["T_tank"]))])
         T_kuehl = np.array([min(40, max(5, input["T_kuehl"]))])
@@ -239,7 +242,7 @@ class Smithpredictor:
         
       
         ############ output #############
-        self.output["r_soll"] = self.r
+        self.output["r_soll"] = min(100,max(0,self.r*100))
         self.output["T_D40"] = T_D40
         self.output["TOELE"] = self.TOELE
         self.output["state"] = input["state"]

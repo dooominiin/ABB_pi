@@ -2,7 +2,6 @@ from threading import Thread
 import time
 from opcua import Client, ua
 import json
-import logging
 
 # Der OPCUA-Client stellt die verbindung zum Leitsystem dar und handelt 
 # INPUT und OUTPUT des Reglers. Das OPCUA Protokoll stellt eine Public 
@@ -40,10 +39,10 @@ class OpcUaClient:
         self.client = Client("opc.tcp://localhost:4840/freeopcua/server/")
         self.client = Client("opcda://172.16.4.21/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
         self.client = Client("opcda://PRIOPC1/ABB.AfwOpcDaSurrogate.1") # 800xa surrogate
-        self.client = Client("opc.tcp://172.16.4.150:48050/") # UA gateway
         self.client = Client("opc.tcp://192.168.43.97:4840/freeopcua/server/")  # adresse lenovo handy hotspot
         self.client = Client("opc.tcp://192.168.43.6:4840/freeopcua/server/")  # adresse PC handy hotspot
-        
+        self.client = Client("opc.tcp://172.16.4.150:48050/") # UA gateway
+
 
 
         self.client.timeout = 10  # Setze den Standard-Timeout auf 10 Sekunden
@@ -113,27 +112,31 @@ class OpcUaClient:
             with open("OPC/variablen.json", "r", encoding='utf-8') as file:
                 variables = json.load(file)
             self.am_senden = True
+            print(1)
             for var_info in variables:
                 name = var_info["name"]
                 namespace = var_info["namespace"]
                 string = var_info["string"]
+                print(2)
                 if var_info["is_output"]:
-                    #print("update output",name,float(self.output[name]))
+                    print("update output",name,float(self.output[name]))
                     time_1=time.time()
                     try:
                         try:
                             my_node = self.client.get_node(f"{namespace};{string}")
-                            #print("get_node() gelungen mit :{}".format(my_node))
+                            print("get_node() gelungen mit :{}".format(my_node))
                         except Exception as e:
                             print("Versuchte get_node() mit {}".format(string))
                             print(e)
                             self.terminate = True
                             raise
                         try:
-                            #var = my_node.get_data_value()
-                            #my_node.set_data_value(var)
-                            my_node.set_value(float(self.output[name]))
-                            #print("set_value() gelungen mit :{}".format(my_node))
+                            my_value = float(self.output[name])
+                            dv = ua.DataValue(ua.Variant(my_value, ua.VariantType.Float))
+                            dv.ServerTimestamp = None
+                            dv.SourceTimestamp = None
+                            my_node.set_data_value(dv)
+                            print("set_data_value() gelungen mit :{}".format(my_node))
                         except Exception as e:
                             print("Versuchte set_value() mit {}".format(my_node))
                             print(e)
