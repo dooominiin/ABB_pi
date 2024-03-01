@@ -1,0 +1,102 @@
+[
+  {
+    "name": "T_D40",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//T_D40:IO.In.Value",
+    "writable": true,
+    "type": "Float",
+    "subscribe": true,
+    "is_output": false,
+    "init_value": 60
+  },
+  {
+    "name": "T_tank",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//T_D50:IO.In.Value",
+    "writable": true,
+    "type": "Float",
+    "subscribe": true,
+    "is_output": false,
+    "init_value": 90
+  },
+  {
+    "name": "T_kuehl",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//T_kuehl:IO.In.Value",
+    "writable": true,
+    "type": "Float",
+    "subscribe": false,
+    "is_output": false,
+    "init_value": 20
+  },
+  {
+    "name": "r_ist",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//T_D5:IO.Out.Value",
+    "writable": true,
+    "type": "Float",
+    "subscribe": true,
+    "is_output": false,
+    "init_value": 0.5
+  },
+  {
+    "name": "F",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//T_D44:SO.Out",
+    "writable": true,
+    "type": "Float",
+    "subscribe": true,
+    "is_output": false,
+    "init_value": 0.001
+  },
+  {
+    "name": "r_soll",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem:vT_Smith_Predictor",
+    "writable": true,
+    "type": "Float",
+    "subscribe": false,
+    "is_output": true,
+    "init_value": 0.5
+  },
+  {
+    "name": "TOELE",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//TÖDI//Schmierölsystem//T_D46:IO.In.IOValue",
+    "writable": true,
+    "type": "Float",
+    "subscribe": true,
+    "is_output": false,
+    "init_value": 40
+  },
+  {
+    "name": "s",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//T_TOELE:vSp",
+    "writable": true,
+    "type": "Float",
+    "subscribe": true,
+    "is_output": false,
+    "init_value": 75
+  }, 
+  {
+    "name": "s_switch_state",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//M_TOELE:vS",
+    "writable": true,
+    "type": "Float",
+    "subscribe": false,
+    "is_output": false,
+    "init_value": 75
+  },
+  {
+    "name": "state",
+    "namespace": "ns=5",
+    "string": "s=Root//Control Network//TLP//Applications//Tödi//Control Modules//Tödi//Schmierölsystem//state",
+    "writable": true,
+    "type": "Int32",
+    "subscribe": false,
+    "is_output": false,
+    "init_value": 1
+  }
+]
