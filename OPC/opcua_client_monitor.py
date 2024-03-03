@@ -34,7 +34,7 @@ class OpcUaClient:
     def __init__(self, dt, meinPlotter):
         self.dt = dt # diskretisierungszeitschritt
         self.zähler = 0                
-        self.client = Client("opc.tcp://192.168.43.203:4842/freeopcua/server/")  # adresse lenovo handy hotspot
+        self.client = Client("opc.tcp://192.168.138.203:4842/freeopcua/server/")  # adresse des raspi im handy hotspot
         self.terminate = False
         self.running = False
         self.thread = Thread(target=self.loop_forever)
