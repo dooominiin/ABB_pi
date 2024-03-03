@@ -1,0 +1,129 @@
+main.py gestartet
+Endpoints other than open requested but private key and certificate are not set.
+Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server nicht möglich! 1er Versuch!
+Verbindung zum OPC Server nicht möglich! 2er Versuch!
+Verbindung zum OPC Server nicht möglich! 3er Versuch!
+Verbindung zum OPC Server nicht möglich! 4er Versuch!
+Verbindung zum OPC Server nicht möglich! 5er Versuch!
+Abbruch nach 5 Versuchen!
+Regler gestoppt durch Client
+Client: False	Server: False	Regler: True
+cannot join thread before it is started
+'NoneType' object has no attribute 'socket'
+Client: False	Server: False	Regler: False
+cannot join thread before it is started
+'NoneType' object has no attribute 'socket'
+gestopt :17:10:33.452162
+main.py gestartet
+Endpoints other than open requested but private key and certificate are not set.
+Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server erfolgreich
+subscribed to:  T_D40
+subscribed to:  T_tank
+subscribed to:  T_kuehl
+subscribed to:  r_ist
+subscribed to:  F
+subscribed to:  TOELE
+subscribed to:  s
+subscribed to:  state
+neue maximalzeit: 0.0300s Zeit: 17:11:45.670552
+Variabel T_D40 aktualisiert mit dem Wert: 60
+Variabel T_tank aktualisiert mit dem Wert: 90
+Variabel T_kuehl aktualisiert mit dem Wert: 20
+Variabel r_ist aktualisiert mit dem Wert: 0.5
+Variabel F aktualisiert mit dem Wert: 0.001
+Variabel TOELE aktualisiert mit dem Wert: 40
+Variabel s aktualisiert mit dem Wert: 75
+Variabel state aktualisiert mit dem Wert: 2
+neue maximalzeit: 0.0321s Zeit: 17:11:46.071051
+neue maximalzeit: 0.0335s Zeit: 17:11:46.104651
+neue maximalzeit: 0.0385s Zeit: 17:11:46.589633
+neue maximalzeit: 0.0417s Zeit: 17:11:47.626362
+neue maximalzeit: 0.0517s Zeit: 17:11:51.614532
+neue maximalzeit: 0.0542s Zeit: 17:11:56.703036
+Versuchte get_node()   
+cannot join current thread
+[Errno 32] Broken pipe
+Client: False	Server: True	Regler: True
+close_secure_channel() failed: socket already closed
+Client: False	Server: False	Regler: False
+close_secure_channel() failed: socket already closed
+gestopt :17:12:30.990355
+main.py gestartet
+Endpoints other than open requested but private key and certificate are not set.
+Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server erfolgreich
+subscribed to:  T_D40
+subscribed to:  T_tank
+subscribed to:  T_kuehl
+subscribed to:  r_ist
+subscribed to:  F
+subscribed to:  TOELE
+subscribed to:  s
+subscribed to:  state
+neue maximalzeit: 0.0277s Zeit: 17:13:03.600637
+neue maximalzeit: 0.0286s Zeit: 17:13:03.700841
+Variabel T_D40 aktualisiert mit dem Wert: 60
+Variabel T_tank aktualisiert mit dem Wert: 90
+Variabel T_kuehl aktualisiert mit dem Wert: 20
+Variabel r_ist aktualisiert mit dem Wert: 0.5
+Variabel F aktualisiert mit dem Wert: 0.001
+Variabel TOELE aktualisiert mit dem Wert: 40
+Variabel s aktualisiert mit dem Wert: 75
+Variabel state aktualisiert mit dem Wert: 2
+neue maximalzeit: 0.0317s Zeit: 17:13:04.001223
+neue maximalzeit: 0.0329s Zeit: 17:13:04.034248
+neue maximalzeit: 0.0330s Zeit: 17:13:04.477999
+neue maximalzeit: 0.0335s Zeit: 17:13:04.657948
+neue maximalzeit: 0.0371s Zeit: 17:13:05.171740
+neue maximalzeit: 0.0400s Zeit: 17:13:05.393517
+neue maximalzeit: 0.0491s Zeit: 17:13:05.442698
+neue maximalzeit: 0.0498s Zeit: 17:13:15.496919
+neue maximalzeit: 0.0560s Zeit: 17:13:15.553003
+Versuchte get_node()   
+cannot join current thread
+[Errno 32] Broken pipe
+Client: False	Server: True	Regler: True
+close_secure_channel() failed: socket already closed
+Client: False	Server: False	Regler: False
+close_secure_channel() failed: socket already closed
+gestopt :17:13:25.179140
+main.py gestartet
+Endpoints other than open requested but private key and certificate are not set.
+Listening on 0.0.0.0:4842
+Starten des OPC-Monitoring Servers erfolgreich
+Verbindung zum OPC Server erfolgreich
+subscribed to:  T_D40
+subscribed to:  T_tank
+subscribed to:  T_kuehl
+subscribed to:  r_ist
+subscribed to:  F
+subscribed to:  TOELE
+subscribed to:  s
+subscribed to:  state
+neue maximalzeit: 0.0306s Zeit: 17:14:14.058792
+Variabel T_D40 aktualisiert mit dem Wert: 60
+Variabel T_tank aktualisiert mit dem Wert: 90
+Variabel T_kuehl aktualisiert mit dem Wert: 20
+Variabel r_ist aktualisiert mit dem Wert: 0.5
+Variabel F aktualisiert mit dem Wert: 0.001
+Variabel TOELE aktualisiert mit dem Wert: 40
+Variabel s aktualisiert mit dem Wert: 75
+Variabel state aktualisiert mit dem Wert: 2
+neue maximalzeit: 0.0531s Zeit: 17:14:14.459293
+neue maximalzeit: 0.0546s Zeit: 17:14:39.487253
+neue maximalzeit: 0.0593s Zeit: 17:14:39.546634
+neue maximalzeit: 0.0618s Zeit: 17:15:04.654900
+neue maximalzeit: 0.0665s Zeit: 17:19:54.948891
+Versuchte get_node()   
+cannot join current thread
+[Errno 32] Broken pipe
+Client: False	Server: True	Regler: True
+close_secure_channel() failed: socket already closed
+Client: False	Server: False	Regler: False
+close_secure_channel() failed: socket already closed
+gestopt :17:29:52.346307
