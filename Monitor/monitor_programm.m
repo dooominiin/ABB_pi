@@ -2,7 +2,7 @@ clear
 close all
 k=0;
 
-maxlaenge = 200;
+maxlaenge = 2000;
 
 dicke = 2;
 fig1 = figure(1);
@@ -73,13 +73,14 @@ while true
         clf
         subplot(3,1,[1 2])
 
-        plot(p.time,p.s_k,'k','LineStyle',':','LineWidth',dicke)
+        plot(p.time,p.s_k2,'k','LineStyle',':','LineWidth',dicke)
         hold on
-        plot(p.time,p.TOELE,'k','LineStyle','-','LineWidth',dicke)
+        plot(p.time,p.TOELE,'k','LineStyle','-.','LineWidth',dicke)
+        plot(p.time,p.T_T_1,'k','LineStyle','-','LineWidth',dicke)
         
         plot(p.time,p.s,'b','LineStyle',':','LineWidth',dicke)
         
-        legend({'s_k','TOELE','s'},'Location','northwest')
+        legend({'s_k2','TOELE','T_T_1','s'},'Location','northwest')
         
         title('äusserer Regelkreis ['+ string(p.time(end))+']')
         grid on
