@@ -109,6 +109,7 @@ if __name__ == "__main__":
         
     except:
         # stop variable updater thread
+        print("SERVER KONNTE NICHT GESTARTET WERDEN")
         var_updater.stop()
 
     # run server until stopped by user
