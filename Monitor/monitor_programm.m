@@ -2,7 +2,7 @@ clear
 close all
 k=0;
 
-maxlaenge = 180;
+maxlaenge = 1580;
 
 dicke = 2;
 fig1 = figure(1);
@@ -48,11 +48,12 @@ while true
         plot(p.time,p.s_V,'k','LineStyle',':','LineWidth',dicke)
         hold on
         plot(p.time,p.("T_D4[0]"),'k','LineStyle','-','LineWidth',dicke)
+        plot(p.time,p.T_V,'cyan','LineStyle','-','LineWidth',dicke)
         
         plot(p.time,p.s_V_K,'b','LineStyle',':','LineWidth',dicke)
         plot(p.time,p.T_V_tilde,'b','LineStyle','-','LineWidth',dicke)
         
-        legend({'s_V','TD40','s_V_K','T_V_tilde'},'Location','northwest')
+        legend({'s_V','TD40','T_V','s_V_K','T_V_tilde'},'Location','northwest')
         title('innerer Regelkreis ['+ string(p.time(end))+']')
         grid on
         
